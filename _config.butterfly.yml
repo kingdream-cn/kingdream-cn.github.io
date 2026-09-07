@@ -71,7 +71,7 @@ category_per_img:
 
 footer_img: false
 
-background:
+background: https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80
 
 cover:
   index_enable: true
@@ -209,7 +209,7 @@ aside:
       link: https://github.com/kingdream-cn
   card_announcement:
     enable: true
-    content: 欢迎来到我的技术博客！这里分享前端、后端、算法等技术文章。
+    content: 欢迎来到我的博客！这里记录我在机器人开发领域的学习日常、踩坑心得与技术沉淀，方向涵盖 ROS、ROS2、SLAM、运动规划、嵌入式及系统架构等。
   card_recent_post:
     enable: true
     limit: 5
@@ -251,7 +251,7 @@ aside:
     post_count: true
     last_push_date: true
     sort_order:
-    runtime_date: '2025/01/01'
+    runtime_date: '2026/09/07'
 
 # --------------------------------------
 # Bottom right button
