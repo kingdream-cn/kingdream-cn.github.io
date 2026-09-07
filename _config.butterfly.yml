@@ -71,7 +71,8 @@ category_per_img:
 
 footer_img: false
 
-background: https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80
+# 背景由 ros-particles.js 动态生成，此处禁用静态背景图
+background: false
 
 cover:
   index_enable: true
@@ -353,6 +354,14 @@ search:
     apiKey:
     indexName:
     option:
+
+# --------------------------------------
+# Custom Inject
+# --------------------------------------
+inject:
+  head:
+  bottom:
+    - <script src="/js/ros-particles.js"></script>
 
 # --------------------------------------
 # Share System
