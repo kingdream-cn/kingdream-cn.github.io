@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/2025/01/01/hello-world/</loc>
+    
+    <lastmod>2026-09-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/about/index.html</loc>
+    
+    <lastmod>2026-09-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/message/index.html</loc>
+    
+    <lastmod>2026-09-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/link/index.html</loc>
+    
+    <lastmod>2026-09-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+
+  <url>
+    <loc>https://kingdream-cn.github.io/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/%E9%9A%8F%E7%AC%94/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/%E4%BB%8B%E7%BB%8D/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/categories/%E7%94%9F%E6%B4%BB/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+</urlset>
