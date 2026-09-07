@@ -360,6 +360,27 @@ search:
 # --------------------------------------
 inject:
   head:
+    - <style>
+        /* 移除首页头部蓝色背景，使用粒子背景 */
+        #page-header.full_page {
+          background: transparent !important;
+        }
+        /* 确保标题文字在粒子背景上清晰可见 */
+        #page-header #site-title {
+          text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        #page-header #site-subtitle {
+          text-shadow: 0 0 15px rgba(0, 255, 136, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        /* 粒子画层级调整，确保在文字下方 */
+        #ros-particle-canvas {
+          z-index: 0 !important;
+        }
+        #body-wrap {
+          position: relative;
+          z-index: 1;
+        }
+      </style>
   bottom:
     - <script src="/js/ros-particles.js"></script>
 
