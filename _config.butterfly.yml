@@ -468,8 +468,8 @@ twikoo:
 giscus:
   repo: kingdream-cn/kingdream-cn.github.io
   repo_id: R_kgDOUQvZcg
-  category: Announcements
-  category_id: DIC_kwDOUQvZcs4DFHJh
+  category: General
+  category_id: DIC_kwDOUQvZcs4DFHJi
   mapping: pathname
   reactions_enabled: 0
   emit_metadata: 0
