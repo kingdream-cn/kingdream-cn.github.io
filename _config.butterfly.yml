@@ -381,23 +381,8 @@ inject:
           z-index: 1;
         }
       </style>
-    - <script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.40/dist/twikoo.all.min.js"></script>
   bottom:
     - <script src="/js/ros-particles.js"></script>
-    - <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          if (document.getElementById('twikoo')) {
-            twikoo.init({
-              envId: 'your-twikoo-env-id', // 替换为你的 envId
-              el: '#twikoo',
-              path: window.location.pathname,
-              onCommentLoaded: function() {
-                console.log('Twikoo 评论加载完成');
-              }
-            });
-          }
-        });
-      </script>
 
 # --------------------------------------
 # Share System
@@ -417,7 +402,7 @@ share:
 # --------------------------------------
 
 comments:
-  use: Twikoo
+  use: Utterances
   text: true
   lazyload: false
   count: false
@@ -474,10 +459,18 @@ facebook_comments:
   lang: en_US
 
 twikoo:
-  envId: # 请填写你的 Twikoo envId
+  envId:
   region:
   visitor: false
   option:
+
+# Utterances - 基于 GitHub Issues 的评论系统
+utterances:
+  repo: kingdream-cn/kingdream-cn.github.io
+  issue-term: pathname
+  theme: github-light
+  label: comment
+  crossorigin: anonymous
 
 remark42:# Giscus - 基于 GitHub Discussions 的评论系统
 giscus:
