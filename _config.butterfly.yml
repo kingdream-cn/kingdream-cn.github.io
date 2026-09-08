@@ -471,7 +471,7 @@ giscus:
   category: Announcements
   category_id: DIC_kwDOUQvZcs4DFHJh
   mapping: pathname
-  reactions_enabled: 1
+  reactions_enabled: 0
   emit_metadata: 0
   input_position: top
   light_theme: light
