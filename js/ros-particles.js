@@ -8,7 +8,7 @@
   // 创建 canvas 元素
   const canvas = document.createElement('canvas');
   canvas.id = 'ros-particle-canvas';
-  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;';
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;';
   
   // 插入到 body 最前面
   document.body.insertBefore(canvas, document.body.firstChild);
