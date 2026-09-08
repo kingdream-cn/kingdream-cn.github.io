@@ -463,7 +463,8 @@ utterances:
   repo: kingdream-cn/kingdream-cn.github.io
   issue_term: pathname
   light_theme: github-light
-  dark_theme: photon-dark
+  dark_theme: github-dark
+  label: Comment
   js:
   option:
 
