@@ -467,9 +467,9 @@ twikoo:
 # Giscus - 基于 GitHub Discussions 的评论系统
 giscus:
   repo: kingdream-cn/kingdream-cn.github.io
-  repo_id: # 请在 https://giscus.app 获取
+  repo_id: R_kgDOUQvZcg
   category: Announcements
-  category_id: # 请在 https://giscus.app 获取
+  category_id: DIC_kwDOUQvZcs4DFHJh
   mapping: pathname
   reactions_enabled: 1
   emit_metadata: 0
