@@ -19,7 +19,7 @@ date: 2026-09-07 10:00:00
 
 - **框架**: [Hexo](https://hexo.io/) - 快速、简洁且高效的博客框架
 - **主题**: [Butterfly](https://butterfly.js.org/) - 一款美观、功能丰富的 Hexo 主题
-- **评论**: [Giscus](https://giscus.app/) - 基于 GitHub Discussions 的评论系统
+- **评论**: [Utterances](https://utteranc.es/) - 基于 GitHub Issues 的评论系统
 - **部署**: [GitHub Pages](https://pages.github.com/) - 免费、稳定的静态网站托管
 
 ### 📝 博客内容
@@ -35,7 +35,7 @@ date: 2026-09-07 10:00:00
 
 ### 💬 互动方式
 
-- 通过 **Giscus** 在文章下方评论
+- 通过 **Utterances** 在文章下方评论（需授权 GitHub 账号）
 - 在 **留言板** 留下你的想法
 - 通过 **邮件** 或 **GitHub** 联系我
 

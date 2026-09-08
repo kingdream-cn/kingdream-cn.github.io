@@ -1,6 +1,6 @@
 ---
 title: 友情链接
-date: 2025-01-01 00:00:00
+date: 2026-09-07 00:00:00
 comment: true
 ---
 
@@ -21,3 +21,7 @@ comment: true
 |------|------|------|
 | Hexo | 快速、简洁且高效的博客框架 | [访问](https://hexo.io) |
 | Butterfly | 美观、功能丰富的 Hexo 主题 | [访问](https://butterfly.js.org) |
+| ROS | 机器人操作系统 | [访问](https://www.ros.org) |
+| ROS2 | 下一代机器人操作系统 | [访问](https://docs.ros.org/en/humble/) |
+| Gazebo | 机器人仿真平台 | [访问](https://gazebosim.org) |
+| MoveIt | 运动规划框架 | [访问](https://moveit.ros.org) |
