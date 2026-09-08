@@ -360,7 +360,8 @@ search:
 # --------------------------------------
 inject:
   head:
-    - <style>
+    - |
+      <style>
         /* 移除首页头部蓝色背景，使用粒子背景 */
         #page-header.full_page {
           background: transparent !important;
