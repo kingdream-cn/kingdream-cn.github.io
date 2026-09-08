@@ -443,14 +443,7 @@ waline:
   pageview: false
   option:
 
-utterances:
-  repo:
-  issue_term: pathname
-  light_theme: github-light
-  dark_theme: photon-dark
-  js:
-  option:
-
+# 移除重复的 utterances 配置，只保留一个
 facebook_comments:
   app_id:
   user_id:
@@ -467,26 +460,16 @@ twikoo:
 # Utterances - 基于 GitHub Issues 的评论系统
 utterances:
   repo: kingdream-cn/kingdream-cn.github.io
-  issue-term: pathname
-  theme: github-light
-  label: comment
-  crossorigin: anonymous
-
-remark42:# Giscus - 基于 GitHub Discussions 的评论系统
-giscus:
-  repo: kingdream-cn/kingdream-cn.github.io
-  repo_id: R_kgDOUQvZcg
-  category: General
-  category_id: DIC_kwDOUQvZcs4DFHJi
-  mapping: pathname
-  reactions_enabled: 0
-  emit_metadata: 0
-  input_position: top
-  light_theme: light
-  dark_theme: dark
-  lang: zh-CN
+  issue_term: pathname
+  light_theme: github-light
+  dark_theme: photon-dark
   js:
   option:
+
+# 已移除 Giscus 和 Twikoo，使用 Utterances
+# 如需重新启用，请参考 Butterfly 主题文档
+
+remark42:
 
 remark42:
   host:
