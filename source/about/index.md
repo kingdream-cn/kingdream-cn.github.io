@@ -20,7 +20,7 @@ comment: false
 ## 📫 联系我
 
 - GitHub: [kingdream-cn](https://github.com/kingdream-cn)
-- Email: kingdream@example.com
+- Email: [2730970347@qq.com](mailto:2730970347@qq.com)
 
 ## 📝 关于博客
 
