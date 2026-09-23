@@ -14,6 +14,8 @@ nav:
 
 menu:
   首页: / || fas fa-home
+  技术: /tech/ || fas fa-code
+  生活: /life/ || fas fa-mug-hot
   分类: /categories/ || fas fa-folder-open
   标签: /tags/ || fas fa-tags
   归档: /archives/ || fas fa-archive
@@ -42,7 +44,7 @@ code_blocks:
 # Social media links
 social:
   fab fa-github: https://github.com/kingdream-cn || Github || '#24292e'
-  fas fa-envelope: mailto:kingdream@example.com || Email || '#4a7dbe'
+  fas fa-envelope: mailto:2730970347@qq.com || Email || '#4a7dbe'
 
 # --------------------------------------
 # Image Settings
@@ -270,6 +272,9 @@ translate:
   msgToSimplifiedChinese: '簡'
 
 readmode: true
+
+# 首次访问时的默认配色：dark / light（仍可通过右下角按钮切换）
+display_mode: dark
 
 darkmode:
   enable: true

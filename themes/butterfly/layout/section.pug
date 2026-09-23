@@ -1,0 +1,13 @@
+extends includes/layout.pug
+
+block content
+  #category
+    .article-sort-title= page.section_title
+    if page.posts && page.posts.length
+      include ./includes/mixins/article-sort.pug
+      +articleSort(page.posts)
+    else
+      div(style='padding: 3rem 1rem; text-align: center; color: var(--font-color); opacity: .65;')
+        p= page.section_desc
+        p 这里还没有文章，敬请期待～
+    include includes/pagination.pug

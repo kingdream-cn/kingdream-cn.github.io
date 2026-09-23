@@ -4,7 +4,7 @@ tags:
   - 随笔
   - 介绍
 categories:
-  - 机器人
+  - 生活
 description: 这是我的第一篇博客文章，记录我作为机器人开发工程师的学习与成长。
 cover: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800'
 abbrlink: 28184

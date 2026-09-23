@@ -6,7 +6,7 @@ tags:
   - 工具
   - GitHub Pages
 categories:
-  - 工具
+  - 技术
 description: 介绍我基于 Git-Interactive-Tutorial 定制开发的交互式 Git 练习页，以及如何用它从零理解 Git 的四个区域和常用命令。
 cover: 'https://kingdream-cn.github.io/git-practice/assets/%E6%A6%82%E8%A7%88.png'
 abbrlink: 31415
