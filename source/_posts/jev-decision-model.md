@@ -10,7 +10,7 @@ tags:
 categories:
   - 技术
 description: 一个不会聊天、不写代码的模型为什么能刷屏 AI 圈？用大白话讲清 Jev 是什么、怎么用、为什么又快又便宜，以及它对具身智能意味着什么。
-cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=abstract%20dark%20technology%20background%2C%20glowing%20blue%20neural%20network%20nodes%20branching%20into%20multiple%20decision%20paths%2C%20minimal%20futuristic%20AI%20concept%20art&image_size=landscape_16_9'
+cover: '/img/jev-cover.jpg'
 abbrlink: 51328
 date: 2026-09-24 21:00:00
 ---
@@ -386,3 +386,5 @@ Jev 赌的就是这件事。它会不会成为新范式还不好说，但至少�
 ---
 
 **参考来源**：TypeSafe AI 官方文档与生态页、Vercel Changelog、36 氪、新智元、华尔街见闻、DeepTech、AIX 财经、腾讯云开发者社区等公开报道。
+
+**封面图**：*Digital Abstraction Neural Network Glow* by Michael Gaylard，授权 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0)，来源 [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Digital_Abstraction_Neural_Network_Glow_(55258890373).jpg)。
