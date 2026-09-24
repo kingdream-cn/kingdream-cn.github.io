@@ -2,27 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://kingdream-cn.github.io/2026/09/09/git-practice-tutorial/</loc>
-    
-    <lastmod>2026-09-23</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kingdream-cn.github.io/2026/09/07/hello-world/</loc>
     
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://kingdream-cn.github.io/categories/index.html</loc>
+    <loc>https://kingdream-cn.github.io/2026/09/24/jev-decision-model/</loc>
     
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -31,7 +22,16 @@
   <url>
     <loc>https://kingdream-cn.github.io/about/index.html</loc>
     
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/categories/index.html</loc>
+    
+    <lastmod>2026-09-24</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -40,7 +40,7 @@
   <url>
     <loc>https://kingdream-cn.github.io/link/index.html</loc>
     
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -49,7 +49,7 @@
   <url>
     <loc>https://kingdream-cn.github.io/message/index.html</loc>
     
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -58,7 +58,7 @@
   <url>
     <loc>https://kingdream-cn.github.io/projects/index.html</loc>
     
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -67,7 +67,16 @@
   <url>
     <loc>https://kingdream-cn.github.io/tags/index.html</loc>
     
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/2026/09/09/git-practice-tutorial/</loc>
+    
+    <lastmod>2026-09-24</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -76,50 +85,92 @@
 
   <url>
     <loc>https://kingdream-cn.github.io/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   
   <url>
-    <loc>https://kingdream-cn.github.io/tags/Git/</loc>
-    <lastmod>2026-09-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kingdream-cn.github.io/tags/%E6%95%99%E7%A8%8B/</loc>
-    <lastmod>2026-09-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kingdream-cn.github.io/tags/%E5%B7%A5%E5%85%B7/</loc>
-    <lastmod>2026-09-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kingdream-cn.github.io/tags/GitHub-Pages/</loc>
-    <lastmod>2026-09-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://kingdream-cn.github.io/tags/%E9%9A%8F%E7%AC%94/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://kingdream-cn.github.io/tags/%E4%BB%8B%E7%BB%8D/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/Git/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/%E6%95%99%E7%A8%8B/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/%E5%B7%A5%E5%85%B7/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/GitHub-Pages/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/AI/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/Jev/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/TypeSafe/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/%E5%86%B3%E7%AD%96%E6%A8%A1%E5%9E%8B/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/%E5%85%B7%E8%BA%AB%E6%99%BA%E8%83%BD/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kingdream-cn.github.io/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/</loc>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -127,15 +178,15 @@
 
   
   <url>
-    <loc>https://kingdream-cn.github.io/categories/%E6%8A%80%E6%9C%AF/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <loc>https://kingdream-cn.github.io/categories/%E7%94%9F%E6%B4%BB/</loc>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://kingdream-cn.github.io/categories/%E7%94%9F%E6%B4%BB/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <loc>https://kingdream-cn.github.io/categories/%E6%8A%80%E6%9C%AF/</loc>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
