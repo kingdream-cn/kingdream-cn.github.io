@@ -210,7 +210,31 @@
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><style>
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet"><style>
+  /* 全局衬线字体 */
+  body {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'Georgia', 'Times New Roman', '宋体', serif;
+  }
+
+  /* 标题加粗，增强层级 */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+  }
+
+  /* 站点标题使用衬线字体 */
+  #site-title,
+  #site-subtitle,
+  .site-name,
+  #aside-content .author-info-name,
+  #aside-content .author-info-description {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Georgia', 'Times New Roman', '宋体', serif;
+  }
+
+  /* 导航菜单 */
+  #nav .menus_items .menus_item .site-page {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Georgia', 'Times New Roman', '宋体', serif;
+  }
+
   /* 移除首页头部蓝色背景，使用粒子背景 */
   #page-header.full_page {
     background: transparent !important;
