@@ -10,7 +10,7 @@ tags:
 categories:
   - 技术
 description: 解析大模型(LLM)与小模型(SLM)的核心差异，探讨边缘智能在具身智能和机器人开发中的实战应用与落地指南。
-cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=A%20futuristic%20split-screen%20conceptual%20illustration%20showing%20the%20contrast%20between%20Cloud%20AI%20and%20Edge%20AI.%20On%20the%20left%20side%3A%20a%20massive%20glowing%20ethereal%20digital%20brain%20suspended%20in%20a%20data%20center%20with%20blue%20and%20purple%20volumetric%20light%2C%20representing%20Cloud%20LLM.%20On%20the%20right%20side%3A%20a%20sleek%2C%20high-tech%20white%20humanoid%20service%20robot%20operating%20locally%20in%20a%20modern%20exhibition%20hall%20with%20glowing%20neon%20circuits%2C%20representing%20Edge%20SLM.%20Clean%20composition%2C%20highly%20detailed%2C%20octane%20render%2C%208k%20resolution%2C%20cinematic%20lighting%2C%20tech%20blog%20header&image_size=landscape_16_9'
+cover: 'https://image.pollinations.ai/prompt/futuristic%20split-screen%20cloud%20AI%20digital%20brain%20left%20side%20vs%20sleek%20white%20humanoid%20robot%20right%20side%20edge%20AI%20tech%20blog%20header?width=1280&height=720&seed=12345'
 abbrlink: 94736
 date: 2026-10-01 10:00:00
 updated: 2026-10-01 10:00:00
@@ -20,7 +20,7 @@ updated: 2026-10-01 10:00:00
 
 提到大模型，很多人脑海中第一时间浮现的往往是那些在云端无所不知的"巨无霸"应用。但在具身智能（Embodied AI）和机器人开发的真实战场上，把所有的"大脑"都放在云端往往并不现实。今天，我们就来聊聊人工智能落地的两条截然不同的路线：大模型（LLM）与小模型（SLM）。它们到底有什么区别？在实际开发中又该如何抉择？
 
-![云端大脑与边缘机器人机甲的呼应](https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=A%20futuristic%20split-screen%20conceptual%20illustration%20showing%20the%20contrast%20between%20Cloud%20AI%20and%20Edge%20AI.%20On%20the%20left%20side%3A%20a%20massive%20glowing%20ethereal%20digital%20brain%20suspended%20in%20a%20data%20center%20with%20blue%20and%20purple%20volumetric%20light%2C%20representing%20Cloud%20LLM.%20On%20the%20right%20side%3A%20a%20sleek%2C%20high-tech%20white%20humanoid%20service%20robot%20operating%20locally%20in%20a%20modern%20exhibition%20hall%20with%20glowing%20neon%20circuits%2C%20representing%20Edge%20SLM.%20Clean%20composition%2C%20highly%20detailed%2C%20octane%20render%2C%208k%20resolution%2C%20cinematic%20lighting%2C%20tech%20blog%20header&image_size=landscape_16_9)
+![云端大脑与边缘机器人机甲的呼应](https://image.pollinations.ai/prompt/futuristic%20split-screen%20cloud%20AI%20digital%20brain%20left%20side%20vs%20sleek%20white%20humanoid%20robot%20right%20side%20edge%20AI%20tech%20blog%20header?width=1280&height=720&seed=12345)
 
 ## 🎭 一个生动的比喻：军师 vs 特种兵
 
@@ -63,7 +63,7 @@ updated: 2026-10-01 10:00:00
 
 **总结**：这里对"知识广度"和"逻辑深度"要求极高，且对延迟不敏感（晚一两秒收到推送没关系），LLM 完美胜任。
 
-![展厅服务机器人与人类的自然对话](https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Medium%20shot%20of%20a%20friendly%20modern%20autonomous%20guide%20robot%20in%20a%20minimalist%20futuristic%20museum%20exhibition.%20The%20robot%20is%20white%20and%20black%20with%20smooth%20curves%2C%20LED%20interactive%20face%20screen%20showing%20a%20subtle%20smiling%20expression%2C%20equipped%20with%20a%20robotic%20arm%20gently%20gesturing%20towards%20a%20holographic%20display.%20Natural%20daylight%20mixed%20with%20ambient%20cyan%20exhibition%20lights%2C%20ultra-realistic%2C%20shot%20on%2035mm%20lens%2C%20depth%20of%20field%2C%20sharp%20focus%2C%20Unreal%20Engine%205%20render%20style&image_size=landscape_16_9)
+![展厅服务机器人与人类的自然对话](https://image.pollinations.ai/prompt/friendly%20modern%20autonomous%20guide%20robot%20in%20museum%20exhibition%20white%20robot%20LED%20face%20robotic%20arm?width=1280&height=720&seed=67890)
 
 ### 场景二：SLM 的主场 —— 驱动机器人的"物理躯体"
 
@@ -77,7 +77,7 @@ updated: 2026-10-01 10:00:00
 
 **总结**：断网可用、极速响应、低显存占用（2GB左右即可）。让机器人不仅会"思考"，还能丝滑地"动"起来。
 
-![机载显卡与代码中枢微距](https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Macro%20cinematic%20shot%20inside%20the%20internal%20hardware%20chest%20of%20an%20advanced%20autonomous%20robot.%20Glowing%20NVIDIA%20GPU%20heat%20sink%2C%20polished%20copper%20heat%20pipes%2C%20intricate%20circuit%20board%20with%20glowing%20neon%20cyan%20traces%2C%20floating%20transparent%20holographic%20Python%20code%20snippets%20and%20JSON%20brackets%20like%20action%3A%20move_forward.%20Cyberpunk%20engineering%20aesthetic%2C%20realistic%20lighting%2C%20ray%20tracing%2C%20sharp%20details&image_size=landscape_16_9)
+![机载显卡与代码中枢微距](https://image.pollinations.ai/prompt/macro%20shot%20inside%20robot%20NVIDIA%20GPU%20circuit%20board%20cyberpunk%20engineering%20glowing%20code?width=1280&height=720&seed=11111)
 
 ## 结语：属于边缘的未来
 
