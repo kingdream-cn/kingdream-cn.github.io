@@ -10,7 +10,7 @@ tags:
 categories:
   - 技术
 description: 解析大模型(LLM)与小模型(SLM)的核心差异，探讨边缘智能在具身智能和机器人开发中的实战应用与落地指南。
-cover: 'https://image.pollinations.ai/prompt/futuristic%20split-screen%20cloud%20AI%20digital%20brain%20left%20side%20vs%20sleek%20white%20humanoid%20robot%20right%20side%20edge%20AI%20tech%20blog%20header?width=1280&height=720&seed=12345'
+cover: 'https://image.pollinations.ai/prompt/futuristic%20AI%20brain%20cloud%20computing%20neural%20network%20blue%20glow?width=1280&height=720&seed=400'
 abbrlink: 94736
 date: 2026-10-01 10:00:00
 updated: 2026-10-01 10:00:00
@@ -20,7 +20,7 @@ updated: 2026-10-01 10:00:00
 
 提到大模型，很多人脑海中第一时间浮现的往往是那些在云端无所不知的"巨无霸"应用。但在具身智能（Embodied AI）和机器人开发的真实战场上，把所有的"大脑"都放在云端往往并不现实。今天，我们就来聊聊人工智能落地的两条截然不同的路线：大模型（LLM）与小模型（SLM）。它们到底有什么区别？在实际开发中又该如何抉择？
 
-![云端大脑与边缘机器人机甲的呼应](https://image.pollinations.ai/prompt/futuristic%20split-screen%20cloud%20AI%20digital%20brain%20left%20side%20vs%20sleek%20white%20humanoid%20robot%20right%20side%20edge%20AI%20tech%20blog%20header?width=1280&height=720&seed=12345)
+![云端大脑与边缘机器人机甲的呼应](https://image.pollinations.ai/prompt/futuristic%20AI%20brain%20cloud%20computing%20neural%20network%20blue%20glow?width=1280&height=720&seed=400)
 
 ## 🎭 一个生动的比喻：军师 vs 特种兵
 
@@ -63,7 +63,9 @@ updated: 2026-10-01 10:00:00
 
 **总结**：这里对"知识广度"和"逻辑深度"要求极高，且对延迟不敏感（晚一两秒收到推送没关系），LLM 完美胜任。
 
-![展厅服务机器人与人类的自然对话](https://image.pollinations.ai/prompt/friendly%20modern%20autonomous%20guide%20robot%20in%20museum%20exhibition%20white%20robot%20LED%20face%20robotic%20arm?width=1280&height=720&seed=67890)
+![小模型边缘计算设备](https://image.pollinations.ai/prompt/small%20embedded%20AI%20device%20edge%20computing%20chip?width=1280&height=720&seed=500)
+
+> 💡 云端 LLM 与边缘 SLM 的协作模式：LLM 负责复杂的"大脑"工作（理解、推理），SLM 负责前端的"小脑"任务（实时控制、快速响应）。两者通过 API 或消息队列协同，构建完整的智能系统。
 
 ### 场景二：SLM 的主场 —— 驱动机器人的"物理躯体"
 
@@ -77,7 +79,7 @@ updated: 2026-10-01 10:00:00
 
 **总结**：断网可用、极速响应、低显存占用（2GB左右即可）。让机器人不仅会"思考"，还能丝滑地"动"起来。
 
-![机载显卡与代码中枢微距](https://image.pollinations.ai/prompt/macro%20shot%20inside%20robot%20NVIDIA%20GPU%20circuit%20board%20cyberpunk%20engineering%20glowing%20code?width=1280&height=720&seed=11111)
+![机器人硬件内部电子器件](https://image.pollinations.ai/prompt/robot%20hardware%20internal%20electronics%20NVIDIA?width=1280&height=720&seed=600)
 
 ## 结语：属于边缘的未来
 
