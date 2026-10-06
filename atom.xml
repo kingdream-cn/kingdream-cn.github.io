@@ -33,8 +33,6 @@
     <category term="机器人开发" scheme="https://kingdream-cn.github.io/categories/%E6%8A%80%E6%9C%AF/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%BC%80%E5%8F%91/"/>
     
     
-    <category term="自动化" scheme="https://kingdream-cn.github.io/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/"/>
-    
     <category term="机器人" scheme="https://kingdream-cn.github.io/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA/"/>
     
     <category term="ROS2" scheme="https://kingdream-cn.github.io/tags/ROS2/"/>
@@ -46,6 +44,8 @@
     <category term="语音交互" scheme="https://kingdream-cn.github.io/tags/%E8%AF%AD%E9%9F%B3%E4%BA%A4%E4%BA%92/"/>
     
     <category term="运维工具" scheme="https://kingdream-cn.github.io/tags/%E8%BF%90%E7%BB%B4%E5%B7%A5%E5%85%B7/"/>
+    
+    <category term="自动化" scheme="https://kingdream-cn.github.io/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/"/>
     
   </entry>
   
@@ -66,11 +66,11 @@
     
     <category term="AI" scheme="https://kingdream-cn.github.io/tags/AI/"/>
     
-    <category term="具身智能" scheme="https://kingdream-cn.github.io/tags/%E5%85%B7%E8%BA%AB%E6%99%BA%E8%83%BD/"/>
-    
     <category term="LLM" scheme="https://kingdream-cn.github.io/tags/LLM/"/>
     
     <category term="SLM" scheme="https://kingdream-cn.github.io/tags/SLM/"/>
+    
+    <category term="具身智能" scheme="https://kingdream-cn.github.io/tags/%E5%85%B7%E8%BA%AB%E6%99%BA%E8%83%BD/"/>
     
     <category term="边缘计算" scheme="https://kingdream-cn.github.io/tags/%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97/"/>
     
@@ -95,15 +95,15 @@
     
     <category term="AI" scheme="https://kingdream-cn.github.io/tags/AI/"/>
     
+    <category term="具身智能" scheme="https://kingdream-cn.github.io/tags/%E5%85%B7%E8%BA%AB%E6%99%BA%E8%83%BD/"/>
+    
+    <category term="自动化" scheme="https://kingdream-cn.github.io/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/"/>
+    
     <category term="Jev" scheme="https://kingdream-cn.github.io/tags/Jev/"/>
     
     <category term="TypeSafe" scheme="https://kingdream-cn.github.io/tags/TypeSafe/"/>
     
     <category term="决策模型" scheme="https://kingdream-cn.github.io/tags/%E5%86%B3%E7%AD%96%E6%A8%A1%E5%9E%8B/"/>
-    
-    <category term="具身智能" scheme="https://kingdream-cn.github.io/tags/%E5%85%B7%E8%BA%AB%E6%99%BA%E8%83%BD/"/>
-    
-    <category term="自动化" scheme="https://kingdream-cn.github.io/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/"/>
     
   </entry>
   
