@@ -6,7 +6,7 @@
   <link href="https://kingdream-cn.github.io/atom.xml" rel="self"/>
   
   <link href="https://kingdream-cn.github.io/"/>
-  <updated>2026-10-06T02:00:00.000Z</updated>
+  <updated>2026-10-09T06:00:00.000Z</updated>
   <id>https://kingdream-cn.github.io/</id>
   
   <author>
@@ -17,35 +17,25 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>🔧 封装黑盒系统：我为酒店机器人大脑写了一个「遥控器」——ROS 2 语音交互一键启动工具的设计与踩坑实录</title>
-    <link href="https://kingdream-cn.github.io/2026/10/06/ros2-voice-remote-tool/"/>
-    <id>https://kingdream-cn.github.io/2026/10/06/ros2-voice-remote-tool/</id>
-    <published>2026-10-06T02:00:00.000Z</published>
-    <updated>2026-10-06T02:00:00.000Z</updated>
+    <title>中国的折叠：顶层全屋智能，一楼煤球炉</title>
+    <link href="https://kingdream-cn.github.io/2026/10/09/china-folded-modernity/"/>
+    <id>https://kingdream-cn.github.io/2026/10/09/china-folded-modernity/</id>
+    <published>2026-10-09T06:00:00.000Z</published>
+    <updated>2026-10-09T06:00:00.000Z</updated>
     
     
-    <summary type="html">在酒店迎宾机器人项目中，面对厂商黑盒系统无法直接修改的硬约束，通过调用厂商提供的控制服务而非直接操作进程的方式，用141行Shell脚本实现语音交互模式的远程开关。本文详细记录了控制面与进程面的架构选择、五大工程设计亮点、四个真实踩坑案例，以及克制即成熟的工程哲学。</summary>
+    <summary type="html">两个三分钟，一个在电脑前用AI写实验报告，一个在炒锅前看母亲切菜。一个国家大到可以同时装下硅谷和麦田，这不是落后，这是现代的纵深。</summary>
     
     
     
-    <category term="技术" scheme="https://kingdream-cn.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
-    
-    <category term="机器人开发" scheme="https://kingdream-cn.github.io/categories/%E6%8A%80%E6%9C%AF/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%BC%80%E5%8F%91/"/>
+    <category term="生活" scheme="https://kingdream-cn.github.io/categories/%E7%94%9F%E6%B4%BB/"/>
     
     
-    <category term="机器人" scheme="https://kingdream-cn.github.io/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA/"/>
+    <category term="随笔" scheme="https://kingdream-cn.github.io/tags/%E9%9A%8F%E7%AC%94/"/>
     
-    <category term="自动化" scheme="https://kingdream-cn.github.io/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/"/>
+    <category term="生活" scheme="https://kingdream-cn.github.io/tags/%E7%94%9F%E6%B4%BB/"/>
     
-    <category term="ROS2" scheme="https://kingdream-cn.github.io/tags/ROS2/"/>
-    
-    <category term="工程实践" scheme="https://kingdream-cn.github.io/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/"/>
-    
-    <category term="Shell" scheme="https://kingdream-cn.github.io/tags/Shell/"/>
-    
-    <category term="语音交互" scheme="https://kingdream-cn.github.io/tags/%E8%AF%AD%E9%9F%B3%E4%BA%A4%E4%BA%92/"/>
-    
-    <category term="运维工具" scheme="https://kingdream-cn.github.io/tags/%E8%BF%90%E7%BB%B4%E5%B7%A5%E5%85%B7/"/>
+    <category term="思考" scheme="https://kingdream-cn.github.io/tags/%E6%80%9D%E8%80%83/"/>
     
   </entry>
   
@@ -112,7 +102,7 @@
     <link href="https://kingdream-cn.github.io/2026/09/09/git-practice-tutorial/"/>
     <id>https://kingdream-cn.github.io/2026/09/09/git-practice-tutorial/</id>
     <published>2026-09-09T02:00:00.000Z</published>
-    <updated>2026-09-23T14:03:35.063Z</updated>
+    <updated>2026-10-09T07:58:26.730Z</updated>
     
     
     <summary type="html">介绍我基于 Git-Interactive-Tutorial 定制开发的交互式 Git 练习页，以及如何用它从零理解 Git 的四个区域和常用命令。</summary>
@@ -137,7 +127,7 @@
     <link href="https://kingdream-cn.github.io/2026/09/07/hello-world/"/>
     <id>https://kingdream-cn.github.io/2026/09/07/hello-world/</id>
     <published>2026-09-07T02:00:00.000Z</published>
-    <updated>2026-09-23T14:03:35.085Z</updated>
+    <updated>2026-10-09T07:58:26.730Z</updated>
     
     
     <summary type="html">这是我的第一篇博客文章，记录我作为机器人开发工程师的学习与成长。</summary>
