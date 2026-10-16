@@ -1,0 +1,1019 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用） | KingDream's Blog</title><meta name="author" content="KingDream"><meta name="copyright" content="KingDream"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="双系统下把 Windows 释放的空间并进 Ubuntu 根分区的完整思路：先判断你属于哪种情况，再决定要不要做、怎么做。含同盘&#x2F;异盘、在线扩容&#x2F;Live 扩容，以及 12 个真实踩坑。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）">
+<meta property="og:url" content="https://kingdream-cn.github.io/2026/10/16/expand-ubuntu-root-partition/index.html">
+<meta property="og:site_name" content="KingDream&#39;s Blog">
+<meta property="og:description" content="双系统下把 Windows 释放的空间并进 Ubuntu 根分区的完整思路：先判断你属于哪种情况，再决定要不要做、怎么做。含同盘&#x2F;异盘、在线扩容&#x2F;Live 扩容，以及 12 个真实踩坑。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kingdream-cn.github.io/img/posts/expand-ubuntu-root-partition/cover.jpg">
+<meta property="article:published_time" content="2026-10-16T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-16T10:00:00.000Z">
+<meta property="article:author" content="KingDream">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="双系统">
+<meta property="article:tag" content="磁盘分区">
+<meta property="article:tag" content="GParted">
+<meta property="article:tag" content="运维">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kingdream-cn.github.io/img/posts/expand-ubuntu-root-partition/cover.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）",
+  "url": "https://kingdream-cn.github.io/2026/10/16/expand-ubuntu-root-partition/",
+  "image": "https://kingdream-cn.github.io/img/posts/expand-ubuntu-root-partition/cover.jpg",
+  "datePublished": "2026-10-16T10:00:00.000Z",
+  "dateModified": "2026-10-16T10:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "KingDream",
+      "url": "https://kingdream-cn.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/kingdream-cn/kingdream-cn.github.io@main/img/favicon.png"><link rel="canonical" href="https://kingdream-cn.github.io/2026/10/16/expand-ubuntu-root-partition/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet"><style>
+  /* 全局衬线字体 */
+  body {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'Georgia', 'Times New Roman', '宋体', serif;
+  }
+
+  /* 标题加粗，增强层级 */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+  }
+
+  /* 站点标题使用衬线字体 */
+  #site-title,
+  #site-subtitle,
+  .site-name,
+  #aside-content .author-info-name,
+  #aside-content .author-info-description {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Georgia', 'Times New Roman', '宋体', serif;
+  }
+
+  /* 导航菜单 */
+  #nav .menus_items .menus_item .site-page {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Georgia', 'Times New Roman', '宋体', serif;
+  }
+
+  /* 移除首页头部蓝色背景，使用粒子背景 */
+  #page-header.full_page {
+    background: transparent !important;
+  }
+  /* 确保标题文字在粒子背景上清晰可见 */
+  #page-header #site-title {
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  #page-header #site-subtitle {
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  /* 粒子画层级调整，确保在文字下方 */
+  #ros-particle-canvas {
+    z-index: 0 !important;
+  }
+  #body-wrap {
+    position: relative;
+    z-index: 1;
+  }
+</style>
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="KingDream's Blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://cdn.jsdelivr.net/gh/kingdream-cn/kingdream-cn.github.io@main/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">29</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tech/"><i class="fa-fw fas fa-code"></i><span> 技术</span></a></div><div class="menus_item"><a class="site-page" href="/life/"><i class="fa-fw fas fa-mug-hot"></i><span> 生活</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/posts/expand-ubuntu-root-partition/cover.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">KingDream's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tech/"><i class="fa-fw fas fa-code"></i><span> 技术</span></a></div><div class="menus_item"><a class="site-page" href="/life/"><i class="fa-fw fas fa-mug-hot"></i><span> 生活</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-16T10:00:00.000Z" title="发表于 2026-10-16 18:00:00">2026-10-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-16T10:00:00.000Z" title="更新于 2026-10-16 18:00:00">2026-10-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF/%E7%B3%BB%E7%BB%9F/">系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">8755</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>36 分钟</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>机器：ASUS TUF Gaming A15（1TB NVMe · GPT · UEFI · Win11 + Ubuntu 24.04.5）<br>结果：根分区 <strong>184.74 GiB → 292.97 GiB</strong>，不重装、不丢数据，<strong>从关机到扩容完重启进系统约 50 分钟</strong><br>适用：任何 Windows + Ubuntu 双系统（华硕 &#x2F; 拯救者 &#x2F; 联想 &#x2F; 戴尔 &#x2F; 惠普思路一致）</p>
+</blockquote>
+<p>跑 ROS、深度学习、Docker 的同学大概都经历过这个：当初装 Ubuntu 只切了 200G，半年后 <code>df -h /</code> 就剩 20G 了，<code>docker pull</code> 都 pull 不动。</p>
+<p>重装系统是最省事的答案，但代价是全部环境重配 —— 对做机器人的人来说，那是两三天。<strong>这篇文章记录的是另一条路：把 Windows 那边闲置的空间，”搬”进 Ubuntu 根分区。</strong></p>
+<p>但先说结论：<strong>这件事的难度，完全取决于你那块空闲空间在物理上的位置。</strong> 同样叫”扩容”，有的情况 3 分钟在线搞定，有的情况要搬 184G 数据、耗时 1 小时、中途断电大概率报废。所以本文的重点不是”怎么做”，而是**”先搞清楚你是哪种情况”**。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="0-TL-DR-·-三分钟版"><a href="#0-TL-DR-·-三分钟版" class="headerlink" title="0. TL;DR · 三分钟版"></a>0. TL;DR · 三分钟版</h2><h3 id="三种情况，难度天差地别"><a href="#三种情况，难度天差地别" class="headerlink" title="三种情况，难度天差地别"></a>三种情况，难度天差地别</h3><table>
+<thead>
+<tr>
+<th>情况</th>
+<th>空闲空间的位置</th>
+<th>要不要 Live USB</th>
+<th>要不要搬数据</th>
+<th>耗时</th>
+<th>风险</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>A</strong></td>
+<td>紧贴根分区<strong>右侧</strong></td>
+<td>❌ 不用，可在线扩容</td>
+<td>❌ 不用</td>
+<td>几分钟</td>
+<td>★☆☆☆☆</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>紧贴根分区<strong>左侧</strong></td>
+<td>✅ 必须</td>
+<td>✅ 搬整个根分区</td>
+<td>30–60 分钟</td>
+<td>★★★★★</td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>和根分区<strong>隔着别的分区</strong></td>
+<td>✅ 必须</td>
+<td>先搬走&#x2F;删掉中间那个</td>
+<td>视情况</td>
+<td>★★★★☆</td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td>在<strong>另一块物理盘</strong>上</td>
+<td>—</td>
+<td><strong>物理上不可能并入</strong></td>
+<td>—</td>
+<td>换思路，见第 6 节</td>
+</tr>
+<tr>
+<td><strong>E</strong></td>
+<td>你用了 <strong>LVM</strong></td>
+<td>❌ 不用</td>
+<td>❌ 不用</td>
+<td>1 分钟</td>
+<td>★☆☆☆☆</td>
+</tr>
+</tbody></table>
+<p><strong>本文的主角是情况 B</strong>（我的机器就是），它最难，所以把 B 讲透了，A&#x2F;C&#x2F;E 都是它的简化版。</p>
+<h3 id="五条铁律（贴墙上）"><a href="#五条铁律（贴墙上）" class="headerlink" title="五条铁律（贴墙上）"></a>五条铁律（贴墙上）</h3><ol>
+<li><strong>必须插电源</strong>。笔记本左移分区到一半没电 &#x3D; 大概率报废。</li>
+<li><strong>点下 Apply 之后没有取消按钮</strong>。进度条跑完之前只能等，不能断电、不能拔盘。</li>
+<li><strong>同盘备份等于没备份</strong>。备份必须放到<strong>另一块物理设备</strong>（移动硬盘 &#x2F; 另一个 U 盘 &#x2F; 网盘）。分区表坏了，同盘的两个分区一起没。</li>
+<li><strong>盘符顺序 ≠ 物理顺序</strong>。<code>C/D/E/F</code> 是 Windows 分配的名字，跟磁盘上的物理排列毫无关系。判断能不能合并，<strong>只能看物理位置</strong>。</li>
+<li><strong>分区号会变，UUID 不会变</strong>。删掉一个分区后，后面所有分区号整体前移；而你所有的配置（fstab、GRUB）靠 <strong>UUID</strong> 认设备。<strong>永远用 UUID + 大小认盘，不要认死 <code>/dev/nvme0n1p8</code>。</strong></li>
+</ol>
+<hr>
+<h2 id="1-先搞懂三个原理（不懂原理必踩坑）"><a href="#1-先搞懂三个原理（不懂原理必踩坑）" class="headerlink" title="1. 先搞懂三个原理（不懂原理必踩坑）"></a>1. 先搞懂三个原理（不懂原理必踩坑）</h2><h3 id="1-1-空闲空间在”右边”还是”左边”，是两件完全不同的事"><a href="#1-1-空闲空间在”右边”还是”左边”，是两件完全不同的事" class="headerlink" title="1.1 空闲空间在”右边”还是”左边”，是两件完全不同的事"></a>1.1 空闲空间在”右边”还是”左边”，是两件完全不同的事</h3><p>分区扩容在技术上只有两个动作：</p>
+<ul>
+<li><strong>向右扩</strong>：把分区的结束位置往后挪。磁盘上原有的数据一个字节都不用动，只要改分区表 + 让文件系统知道”你的地盘变大了”。<strong>快、安全、可以边运行边做。</strong></li>
+<li><strong>向左扩（左移 + 扩容）</strong>：把分区的<strong>起始位置</strong>往前挪。文件系统开头（超级块、块位图、inode 表）的位置全变了，所以必须<strong>把整个文件系统的数据整块搬到新位置</strong>。<strong>慢、不可逆、必须在 Live 环境做。</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">情况 A：空闲在右边 —— 简单</span><br><span class="line">┌──────────────────┬──────────┐</span><br><span class="line">│ 根分区 ext4 184G │ 空闲 92G │</span><br><span class="line">└──────────────────┴──────────┘</span><br><span class="line">                    ↑ 直接往后吃，不用搬数据</span><br><span class="line"></span><br><span class="line">情况 B：空闲在左边 —— 我这次，最难</span><br><span class="line">┌──────────┬──────────┬──────────────────┐</span><br><span class="line">│ 空闲 92G │ swap 15G │ 根分区 ext4 184G │</span><br><span class="line">└──────────┴──────────┴──────────────────┘</span><br><span class="line">                      ↑ 要让根分区吃到左边的空闲，</span><br><span class="line">                        必须把整个 184G 数据整体左移</span><br><span class="line"></span><br><span class="line">情况 C：中间隔着别的分区</span><br><span class="line">┌──────────┬────────────┬──────────────────┐</span><br><span class="line">│ 空闲 92G │ Windows D: │ 根分区 ext4 184G │</span><br><span class="line">└──────────┴────────────┴──────────────────┘</span><br><span class="line">            ↑ 得先把这个分区搬走或删掉</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-盘符顺序-≠-物理顺序（最容易犯的错）"><a href="#1-2-盘符顺序-≠-物理顺序（最容易犯的错）" class="headerlink" title="1.2 盘符顺序 ≠ 物理顺序（最容易犯的错）"></a>1.2 盘符顺序 ≠ 物理顺序（最容易犯的错）</h3><p>我的机器上盘符是 <code>C: / D: / E: / F:</code>，但磁盘上的物理排列是这样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">物理顺序： C: → WinRE → F: → E: → swap → Ubuntu根 → D: → 恢复分区</span><br><span class="line">盘符顺序： C:          D:    E:    F:</span><br></pre></td></tr></table></figure>
+
+<p>看出来了吗：<strong><code>F:</code> 物理上在 <code>E:</code> 前面，<code>D:</code> 物理上在最后面。</strong> 所以：</p>
+<ul>
+<li>我当时想给 Ubuntu 扩容，第一反应是”从 F 盘分点空间出来” —— <strong>完全不可能</strong>，因为 F 和 Ubuntu 之间隔着整个 E 盘（292G）。</li>
+<li>而 <code>E:</code> 恰好紧贴 swap、swap 又紧贴 Ubuntu 根分区 —— 删掉 E 就能拿到一块正好在根分区<strong>左边</strong>的连续空闲。这才让方案成立。</li>
+</ul>
+<p><strong>怎么查自己的物理顺序</strong>（管理员 PowerShell）：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Partition</span> <span class="literal">-DiskNumber</span> <span class="number">0</span> |</span><br><span class="line">  <span class="built_in">Select-Object</span> PartitionNumber, DriveLetter, Offset, Size |</span><br><span class="line">  <span class="built_in">Sort-Object</span> Offset | <span class="built_in">Format-Table</span> <span class="literal">-AutoSize</span></span><br></pre></td></tr></table></figure>
+
+<p>按 <code>Offset</code>（字节偏移）排序，就是真实物理顺序。或者更直观：打开<strong>磁盘管理</strong>看下面那条图形化色块，位置一目了然。</p>
+<h3 id="1-3-分区号会变，UUID-不会变"><a href="#1-3-分区号会变，UUID-不会变" class="headerlink" title="1.3 分区号会变，UUID 不会变"></a>1.3 分区号会变，UUID 不会变</h3><p>我的根分区在操作前后：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>操作前</th>
+<th>操作后</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>设备名</td>
+<td><code>/dev/nvme0n1p8</code></td>
+<td><strong><code>/dev/nvme0n1p7</code></strong></td>
+</tr>
+<tr>
+<td>UUID</td>
+<td><code>58f902e2-…</code></td>
+<td><strong><code>58f902e2-…</code>（不变）</strong></td>
+</tr>
+</tbody></table>
+<p>为什么变？因为删掉了中间一个分区（原 p6），后面所有分区号前移一位。这也是为什么<strong>所有老教程里的 <code>/dev/nvme0n1p8</code> 照抄会出错</strong>。</p>
+<p>而 UUID 是文件系统自己的身份证，左移、扩容都不会改它。所以：</p>
+<ul>
+<li><strong>GRUB 靠 <code>search --fs-uuid</code> 找根分区</strong> → UUID 没变，扩容后能正常启动；</li>
+<li><strong><code>/etc/fstab</code> 靠 UUID 挂载</strong> → 改设备名的教程都是坑；</li>
+<li>判断”哪个是我根分区”，永远用 <code>UUID + 大小</code>，别用设备名。</li>
+</ul>
+<hr>
+<h2 id="2-先判断你是哪种情况（含自查命令）"><a href="#2-先判断你是哪种情况（含自查命令）" class="headerlink" title="2. 先判断你是哪种情况（含自查命令）"></a>2. 先判断你是哪种情况（含自查命令）</h2><p>在 Ubuntu 里跑这两条，把结果记下来：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1) 看物理布局：LMV 会直接显示出来；看根分区在哪、它左边/右边是什么</span></span><br><span class="line">lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2) 看精确的物理偏移（扇区），这个才是判断&quot;左边右边&quot;的依据</span></span><br><span class="line"><span class="keyword">for</span> p <span class="keyword">in</span> /sys/class/block/nvme0n1p*; <span class="keyword">do</span></span><br><span class="line">  s=$(<span class="built_in">cat</span> <span class="variable">$p</span>/start); n=$(<span class="built_in">cat</span> <span class="variable">$p</span>/size)</span><br><span class="line">  <span class="built_in">printf</span> <span class="string">&quot;%-14s 起始扇区 %12d  大小 %8.2f GiB\n&quot;</span> <span class="string">&quot;<span class="subst">$(basename $p)</span>&quot;</span> <span class="string">&quot;<span class="variable">$s</span>&quot;</span> <span class="string">&quot;<span class="subst">$(echo <span class="string">&quot;<span class="variable">$n</span>*512/1073741824&quot;</span>|bc -l)</span>&quot;</span></span><br><span class="line"><span class="keyword">done</span> | <span class="built_in">sort</span> -k3 -n</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Windows 侧删卷后，那块空间不会出现在 <code>lsblk</code> 里（<code>lsblk</code> 只列分区，不列空隙）。<strong>空隙要靠 <code>起始扇区</code> 之间的差值自己算</strong>：相邻两个分区的 <code>前一个起始 + 前一个大小 ≠ 后一个起始</code>，中间差的就是空闲空间。</p>
+</blockquote>
+<h3 id="情况-A：空闲紧贴根分区右侧"><a href="#情况-A：空闲紧贴根分区右侧" class="headerlink" title="情况 A：空闲紧贴根分区右侧"></a>情况 A：空闲紧贴根分区右侧</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 例如：根分区是磁盘上最后一个分区，右边有一块未分配</span></span><br><span class="line"><span class="built_in">sudo</span> apt install -y cloud-guest-utils</span><br><span class="line"><span class="built_in">sudo</span> growpart /dev/nvme0n1 7        <span class="comment"># 注意：设备名和分区号之间是空格</span></span><br><span class="line"><span class="built_in">sudo</span> resize2fs /dev/nvme0n1p7</span><br><span class="line"><span class="built_in">df</span> -h /</span><br></pre></td></tr></table></figure>
+
+<p><strong>不用关机、不用 Live USB、几分钟搞定。</strong> <code>growpart</code> 只改分区表末尾，<code>resize2fs</code> 支持在线扩大。</p>
+<blockquote>
+<p>⚠️ 一个小坑：如果那块空闲不在磁盘最末尾，内核可能没法重读分区表（提示 device busy）。这时重启一次，再跑 <code>resize2fs</code> 即可。</p>
+</blockquote>
+<h3 id="情况-B：空闲紧贴根分区左侧-←-我这次"><a href="#情况-B：空闲紧贴根分区左侧-←-我这次" class="headerlink" title="情况 B：空闲紧贴根分区左侧 ← 我这次"></a>情况 B：空闲紧贴根分区左侧 ← 我这次</h3><p><strong>必须用 Live USB，必须搬数据。</strong> 完整流程见第 4 节。</p>
+<h3 id="情况-C：中间隔着别的分区"><a href="#情况-C：中间隔着别的分区" class="headerlink" title="情况 C：中间隔着别的分区"></a>情况 C：中间隔着别的分区</h3><p>把中间那个分区处理掉：</p>
+<ul>
+<li><strong>中间是 swap</strong>：这是最常见也最好办的情况 —— <strong>直接删掉 swap 分区</strong>，然后在系统里用 <strong>swapfile</strong> 顶替（第 4.7 节）。这也是我这次的方案，因为我的布局正是 <code>[空闲][swap][根分区]</code>。</li>
+<li><strong>中间是 Windows 数据分区</strong>：需要把它整体搬移（GParted 的 Move）。<strong>搬 NTFS 比搬 ext4 更危险</strong>，务必备份该分区数据，且中途绝不能断电。搬完 Windows 可能要跑一次 chkdsk，属正常。</li>
+<li><strong>中间是 Windows 的恢复分区 &#x2F; EFI 分区</strong>：<strong>别动</strong>。恢复分区删了不影响使用但会丢恢复功能；EFI 分区动了直接开不了机。</li>
+</ul>
+<h3 id="情况-D：空闲在另一块盘上"><a href="#情况-D：空闲在另一块盘上" class="headerlink" title="情况 D：空闲在另一块盘上"></a>情况 D：空闲在另一块盘上</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">盘0 (nvme0n1)： [C:] [F:] [swap] [Ubuntu 根]     ← 满了</span><br><span class="line">盘1 (nvme1n1)： [空闲 500G]                      ← 有的是空间</span><br></pre></td></tr></table></figure>
+
+<p><strong>物理上够不着，不能并进根分区。</strong> 别被”我有 500G 空闲”骗了 —— 分区只能在同一块盘上相邻合并。</p>
+<p>正确思路是<strong>换目标</strong>：不是”扩大根分区”，而是”<strong>把吃空间的东西搬到另一块盘</strong>“。具体见第 6 节，实际上这才是双硬盘机器更该用的方案。</p>
+<h3 id="情况-E：你装-Ubuntu-时选了-LVM（最幸运的情况）"><a href="#情况-E：你装-Ubuntu-时选了-LVM（最幸运的情况）" class="headerlink" title="情况 E：你装 Ubuntu 时选了 LVM（最幸运的情况）"></a>情况 E：你装 Ubuntu 时选了 LVM（最幸运的情况）</h3><p><code>lsblk</code> 里如果看到 <code>ubuntu--vg-ubuntu--lv</code> 这类名字，恭喜：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> growpart /dev/nvme0n1 3                     <span class="comment"># 扩 PV 所在分区（用实际号）</span></span><br><span class="line"><span class="built_in">sudo</span> pvresize /dev/nvme0n1p3</span><br><span class="line"><span class="built_in">sudo</span> lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv</span><br><span class="line"><span class="built_in">sudo</span> resize2fs /dev/ubuntu-vg/ubuntu-lv</span><br><span class="line"><span class="built_in">df</span> -h /</span><br></pre></td></tr></table></figure>
+
+<p><strong>全程在线、不用关机、秒级完成。</strong> 这也顺便回答了”装系统时该不该选 LVM” —— 该选，它是你未来的后悔药。</p>
+<hr>
+<h2 id="3-需要准备什么"><a href="#3-需要准备什么" class="headerlink" title="3. 需要准备什么"></a>3. 需要准备什么</h2><h3 id="3-1-备份（唯一不能省的一步，也是最容易做错的一步）"><a href="#3-1-备份（唯一不能省的一步，也是最容易做错的一步）" class="headerlink" title="3.1 备份（唯一不能省的一步，也是最容易做错的一步）"></a>3.1 备份（唯一不能省的一步，也是最容易做错的一步）</h3><p><strong>先说三个反直觉的坑：</strong></p>
+<ol>
+<li><strong>同盘备份无效。</strong> 如果分区表损坏，同一块盘上的所有分区一起受影响。必须备份到<strong>另一块物理设备</strong>。</li>
+<li><strong>用 <code>rsync</code> 逐个文件拷到 U 盘，可能悄悄丢掉符号链接。</strong> 因为 U 盘常见的 <strong>exFAT 文件系统根本不支持符号链接</strong>。我这次要备份的 <code>/home</code> 里有 <strong>1399 个符号链接</strong>，逐文件复制会全部失败（报 <code>symlink failed: Operation not permitted</code>）。</li>
+<li><strong>exFAT 处理海量小文件极慢。</strong> 我的 <code>/home</code> 有 <strong>27.5 万个文件</strong>，逐文件写 U 盘会慢到离谱。</li>
+</ol>
+<p><strong>所以推荐用 <code>tar</code> 打成单个大文件</strong> —— 顺序写入更快，而且完整保留<strong>符号链接 &#x2F; 权限 &#x2F; 属主 &#x2F; 硬链接 &#x2F; xattr</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先看一眼要备份多少东西</span></span><br><span class="line">find /home/<span class="variable">$USER</span> -xdev \( -path <span class="string">&#x27;*/.cache&#x27;</span> -o -path <span class="string">&#x27;*/snap&#x27;</span> \) -prune -o \</span><br><span class="line">  -<span class="built_in">printf</span> <span class="string">&#x27;%y\n&#x27;</span> 2&gt;/dev/null | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -c</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打包（排除缓存；插上移动硬盘后把路径换成你的挂载点）</span></span><br><span class="line"><span class="built_in">sudo</span> tar -cpf /mnt/backup/home_$(<span class="built_in">date</span> +%Y%m%d).tar \</span><br><span class="line">  --one-file-system --acls --xattrs \</span><br><span class="line">  --checkpoint=200 --checkpoint-action=dot \</span><br><span class="line">  --exclude=<span class="string">&quot;<span class="variable">$USER</span>/.cache&quot;</span> --exclude=<span class="string">&quot;<span class="variable">$USER</span>/snap&quot;</span> \</span><br><span class="line">  -C /home <span class="string">&quot;<span class="variable">$USER</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>--checkpoint-action=dot</code> 每约 100MB 打一个点，方便看进度。还原：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tar -xpf /mnt/backup/home_20261016.tar -C /home</span><br></pre></td></tr></table></figure>
+
+<p><strong>打完必须校验</strong>，否则你不知道这个 tar 能不能读回来：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 结构校验：成员数 / 体积</span></span><br><span class="line">tar -tf  xxx.tar | <span class="built_in">wc</span> -l</span><br><span class="line"><span class="built_in">ls</span> -lh   xxx.tar</span><br><span class="line"></span><br><span class="line"><span class="comment"># 内容校验：把所有数据读回来逐字节对比（慢，但这是唯一可靠的方式）</span></span><br><span class="line"><span class="built_in">sudo</span> tar -<span class="built_in">df</span> xxx.tar -C /home <span class="string">&quot;<span class="variable">$USER</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>我这次打出来 33.54 GiB &#x2F; 340,291 个成员，完整读回对比后<strong>只有 662 处差异，全部是钉钉 &#x2F; 微信 &#x2F; 搜狗输入法正在写的运行时文件</strong> —— 这种”文件在我们读入时发生了变化”的提示是<strong>正常</strong>的，不是损坏。真正要警惕的是成片的 <code>Unexpected EOF</code>、<code>无法读取</code>。</p>
+</blockquote>
+<p><strong>如果没有外置盘呢？</strong> 至少把真正值钱的目录（代码仓库、ROS 工作空间、论文、数据集）单独打个 tar 传网盘。我的 <code>/home</code> 44G 里，真正不可再生的部分只有 11G 左右，剩下的都是缓存和配置。</p>
+<h3 id="3-2-信息记录表（关机之后就查不到电脑了，必须抄下来）"><a href="#3-2-信息记录表（关机之后就查不到电脑了，必须抄下来）" class="headerlink" title="3.2 信息记录表（关机之后就查不到电脑了，必须抄下来）"></a>3.2 信息记录表（关机之后就查不到电脑了，必须抄下来）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT,UUID,PARTUUID   <span class="comment"># 布局 + UUID</span></span><br><span class="line"><span class="built_in">cat</span> /etc/fstab                                        <span class="comment"># 挂载配置原文</span></span><br><span class="line"><span class="built_in">sudo</span> blkid                                            <span class="comment"># 所有 UUID</span></span><br></pre></td></tr></table></figure>
+
+<p>需要抄下来的：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>示例（我的）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>根分区 ext4 UUID</td>
+<td><code>58f902e2-…</code>（<strong>扩容后必须还是它</strong>）</td>
+</tr>
+<tr>
+<td>EFI 分区 UUID</td>
+<td><code>DF69-9B0A</code></td>
+</tr>
+<tr>
+<td>swap 行原文（待注释）</td>
+<td><code>UUID=41536387-… none swap sw 0 0</code></td>
+</tr>
+<tr>
+<td>空闲空间大小</td>
+<td>92.97 GiB</td>
+</tr>
+<tr>
+<td>目标大小</td>
+<td>292.97 GiB（GParted 里 <code>New size</code> ≈ 300002 MiB）</td>
+</tr>
+</tbody></table>
+<p><strong>拍照 &#x2F; 发微信文件传输助手 &#x2F; 存手机</strong> —— 进了 Live 环境，电脑上的文档全读不到，只有手机能看。</p>
+<h3 id="3-3-Windows-侧准备（不做这几步，后面必出问题）"><a href="#3-3-Windows-侧准备（不做这几步，后面必出问题）" class="headerlink" title="3.3 Windows 侧准备（不做这几步，后面必出问题）"></a>3.3 Windows 侧准备（不做这几步，后面必出问题）</h3><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>命令 &#x2F; 位置</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>关闭快速启动</strong></td>
+<td>控制面板 → 电源选项 → 选择电源按钮的功能 → 更改当前不可用的设置 → 取消勾选「启用快速启动」</td>
+<td>快速启动会让 Windows 关机时<strong>不完全释放分区</strong>，分区表处于”脏”状态，删卷可能失败</td>
+</tr>
+<tr>
+<td><strong>关闭休眠</strong></td>
+<td>管理员 CMD：<code>powercfg /h off</code></td>
+<td>休眠会把内存镜像写进磁盘，NTFS 变脏，Linux 侧工具不敢动它</td>
+</tr>
+<tr>
+<td><strong>确认没开 BitLocker</strong></td>
+<td>管理员 CMD：<code>manage-bde -status</code></td>
+<td>加密分区被 Linux 工具改动后可能需要 48 位恢复密钥。<strong>开着就先解密</strong>（暂停保护不够，要完全解密）</td>
+</tr>
+<tr>
+<td><strong>确认不是动态磁盘</strong></td>
+<td>管理员 PowerShell：<code>Get-Disk</code></td>
+<td>动态磁盘 Linux 工具认不了，先转回基本磁盘</td>
+</tr>
+<tr>
+<td><strong>退出占用的程序</strong></td>
+<td>百度网盘（会挂载同步盘）、杀软</td>
+<td>卷被占用时删不掉</td>
+</tr>
+</tbody></table>
+<h3 id="3-4-制作-Live-USB"><a href="#3-4-制作-Live-USB" class="headerlink" title="3.4 制作 Live USB"></a>3.4 制作 Live USB</h3><p><strong>为什么非要 Live USB？</strong> 因为<strong>运行中的系统没法改自己所在的分区</strong>。你在 Ubuntu 里跑 gparted 去动 <code>/</code>，它会直接拒绝。</p>
+<p><strong>推荐用 Ventoy</strong>，理由是<strong>一块盘能同时干两件事</strong>：既是启动盘，又能装下你的备份（我这次 U 盘 57.6G，装 6.4G 的 ISO + 33.5G 的备份，还剩 17G）。ISO 就是个文件，随便放、随便删。</p>
+<p>要放两个 ISO：</p>
+<table>
+<thead>
+<tr>
+<th>ISO</th>
+<th>用途</th>
+<th>大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Ubuntu 桌面版</strong>（<strong>版本要和你的系统一致</strong>）</td>
+<td>熟悉的 Live 环境，用来改 fstab、修引导</td>
+<td>~6 GB</td>
+</tr>
+<tr>
+<td><strong>GParted Live</strong></td>
+<td><strong>保底的分区工具</strong>，开机直接是 GParted</td>
+<td>~620 MB</td>
+</tr>
+</tbody></table>
+<p><strong>为什么还要单独一个 GParted Live？</strong> 两个原因，都是血泪：</p>
+<ol>
+<li><strong>Ubuntu Live 桌面默认不带 GParted</strong>，要 <code>sudo apt install gparted</code>，而 Live 环境里 <strong>WiFi 网卡不一定能用</strong> —— 没网就装不了，直接卡死。GParted Live 开机就是 root 权限的 GParted，<strong>不需要联网</strong>。</li>
+<li><strong>ISO 版本必须和你系统版本一致</strong>。我系统是 24.04，如果拿 22.04 的盘去扩容，它自带的 <code>e2fsprogs</code> 是 1.46.5（2022 年），<strong>不认识 24.04 ext4 的新特性（如 <code>orphan_file</code>）</strong>，会直接报”文件系统有不支持的特性”而<strong>拒绝扩容</strong>。新版工具能认旧文件系统，反过来不行。</li>
+</ol>
+<p><strong>Rufus 还是 dd？</strong> 用 Rufus（Windows）或 Ventoy 都行。关键选项：<strong>分区类型 GPT、目标系统 UEFI(非 CSM)</strong>。用 Rufus 时若提示下载 <code>ldlinux.sys</code> 等文件，选”是”。</p>
+<blockquote>
+<p><strong>Ventoy 的一个坑（我踩了）</strong>：GPT 模式下它的数据分区是 <strong>p1</strong>、引导分区是 <strong>p2</strong>（和 MBR 模式<strong>正好相反</strong>）。写脚本时如果写死 <code>/dev/sda2</code> 当数据分区，就会把 6G 的 ISO 往 32M 的引导分区里塞，报”设备上没有空间”。<strong>永远按卷标识别，不要认分区号。</strong></p>
+</blockquote>
+<h3 id="3-5-物理准备"><a href="#3-5-物理准备" class="headerlink" title="3.5 物理准备"></a>3.5 物理准备</h3><ul>
+<li><strong>插电源</strong>（笔记本必做）</li>
+<li><strong>别合盖、别休眠</strong>。息屏无所谓，<strong>挂起才是致命的</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gsettings <span class="built_in">set</span> org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type <span class="string">&#x27;nothing&#x27;</span></span><br><span class="line">gsettings <span class="built_in">set</span> org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type <span class="string">&#x27;nothing&#x27;</span></span><br></pre></td></tr></table></figure></li>
+<li>留出<strong>至少 1.5 小时</strong>不被打扰（我这次全程约 50 分钟，但慢的机器可能 1.5 小时以上）</li>
+</ul>
+<hr>
+<h2 id="4-实战：我这次的完整过程（情况-B）"><a href="#4-实战：我这次的完整过程（情况-B）" class="headerlink" title="4. 实战：我这次的完整过程（情况 B）"></a>4. 实战：我这次的完整过程（情况 B）</h2><h3 id="4-0-我的初始布局"><a href="#4-0-我的初始布局" class="headerlink" title="4.0 我的初始布局"></a>4.0 我的初始布局</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">物理顺序（扇区偏移）：</span><br><span class="line">  p1 MSR          0.12G</span><br><span class="line">  p2 EFI          0.25G   ← 共用 Windows 的 EFI 分区</span><br><span class="line">  p3 C:  OS      313.29G</span><br><span class="line">  p4 WinRE        1.01G</span><br><span class="line">  p5 F: 其他应用  292.97G</span><br><span class="line">  ────────────── 92.97G 未分配（原 E 盘，已删）← 正好在 swap 左边 ✅</span><br><span class="line">  p6 linux-swap   15.26G  ← 待删除</span><br><span class="line">  p7 ext4 根分区 184.74G  ← 待左移扩容</span><br><span class="line">  ────────────── 0.93G 既有空隙（忽略）</span><br><span class="line">  p8 D: RESTORE   52.07G</span><br><span class="line">  p9 MYASUS       0.26G</span><br></pre></td></tr></table></figure>
+
+<p>注意 <code>E:</code> 和 <code>F:</code> 的物理位置是反的 —— 这就是 1.2 节说的坑。</p>
+<h3 id="4-1-Windows-侧：删掉-E-盘，拿到-92-97G-空闲"><a href="#4-1-Windows-侧：删掉-E-盘，拿到-92-97G-空闲" class="headerlink" title="4.1 Windows 侧：删掉 E 盘，拿到 92.97G 空闲"></a>4.1 Windows 侧：删掉 E 盘，拿到 92.97G 空闲</h3><p><code>Win + X</code> → <strong>磁盘管理</strong> → 找到 <code>E:</code>（<strong>再三确认盘符，别删错成 D 或 F</strong>）→ 右键 <strong>删除卷</strong> → 确认。</p>
+<p>删完必须验证（管理员 PowerShell）：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Partition</span> <span class="literal">-DiskNumber</span> <span class="number">0</span> | <span class="built_in">Select-Object</span> PartitionNumber, DriveLetter, Offset, Size | <span class="built_in">Sort-Object</span> Offset</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><input disabled="" type="checkbox"> <code>E:</code> 盘符消失</li>
+<li><input disabled="" type="checkbox"> 多出一块约 92.97 GiB 的<strong>未分配</strong>（黑色），且<strong>紧贴 Linux swap 的左边</strong></li>
+<li><input disabled="" type="checkbox"> <strong>绝对不要</strong>右键新建卷、不要格式化 —— 新建卷会把这块空间重新变成 Windows 分区，前功尽弃</li>
+</ul>
+<p>我删卷后实测：<code>C / D / F</code> 盘符保留，其余分区偏移与大小<strong>完全未变</strong>。</p>
+<h3 id="4-2-Ubuntu-侧：备份-记录"><a href="#4-2-Ubuntu-侧：备份-记录" class="headerlink" title="4.2 Ubuntu 侧：备份 + 记录"></a>4.2 Ubuntu 侧：备份 + 记录</h3><p>见第 3.1 &#x2F; 3.2 节。我的备份结果：<strong>33.54 GiB tar，340,291 个成员，完整读回校验通过</strong>。</p>
+<h3 id="4-3-提前改-etc-fstab（这是我对老教程的一个改进）"><a href="#4-3-提前改-etc-fstab（这是我对老教程的一个改进）" class="headerlink" title="4.3 提前改 /etc/fstab（这是我对老教程的一个改进）"></a>4.3 提前改 <code>/etc/fstab</code>（这是我对老教程的一个改进）</h3><p><strong>老教程的做法</strong>：删掉 swap 分区后，在 Live 环境里挂载根分区，用 <code>nano</code> 手改 fstab。</p>
+<p><strong>我的做法</strong>：<strong>在还正常运行的 Ubuntu 里就改好</strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">cp</span> -a /etc/fstab /etc/fstab.bak-$(<span class="built_in">date</span> +%Y%m%d-%H%M%S)</span><br><span class="line"><span class="comment"># 只注释掉 swap 那一行，用精确 UUID 匹配，不会误伤别的行</span></span><br><span class="line"><span class="built_in">sudo</span> sed -i <span class="string">&#x27;s|^UUID=41536387-…|#UUID=41536387-…|&#x27;</span> /etc/fstab</span><br><span class="line">grep -n <span class="string">&#x27;&#x27;</span> /etc/fstab</span><br></pre></td></tr></table></figure>
+
+<p>改前 → 改后：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">UUID=58f902e2-… /        ext4  errors=remount-ro 0 1     ← 不动</span><br><span class="line">UUID=DF69-9B0A   /boot/efi vfat  umask=0077       0 1     ← 不动</span><br><span class="line">UUID=41536387-… none      swap  sw               0 0     ← 注释掉这一行</span><br></pre></td></tr></table></figure>
+
+<p><strong>为什么这样更安全？</strong> Live 环境里没有你熟悉的编辑器和撤销手段，改错一行就是开不了机。而在正常系统里，有备份、有精确匹配、改完能立刻用 <code>findmnt --verify</code> 自检。</p>
+<p><strong>顺手检查两个容易漏的地方</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grep -rn <span class="string">&#x27;resume=&#x27;</span> /etc/default/grub            <span class="comment"># 有的话要删掉指向被删 swap 的那段</span></span><br><span class="line"><span class="built_in">cat</span> /etc/initramfs-tools/conf.d/resume 2&gt;/dev/null   <span class="comment"># 老系统这里可能钉着 swap 的 UUID</span></span><br></pre></td></tr></table></figure>
+
+<p>我机器上这两处都没有，省事。<strong>如果不检查</strong>：开机可能卡在 <code>A start job is running for dev-disk-by\x2duuid-…</code> 整整 90 秒，或者进 emergency mode。</p>
+<h3 id="4-4-关机-→-从-U-盘启动"><a href="#4-4-关机-→-从-U-盘启动" class="headerlink" title="4.4 关机 → 从 U 盘启动"></a>4.4 关机 → 从 U 盘启动</h3><ol>
+<li>开始菜单 → <strong>关机</strong>（❌ 不要”重启” —— 可能走 Windows 快速启动路径；❌ 不要”休眠”）</li>
+<li><strong>拔掉除 Ventoy U 盘外的所有 USB 设备</strong>（拓展坞、鼠标接收器都拔，避免启动顺序混乱）</li>
+<li>开机狂按<strong>启动菜单键</strong>（见第 8 节的品牌表；<strong>华硕是 <code>Esc</code></strong>）</li>
+<li>选带 <strong><code>UEFI:</code></strong> 前缀的那一项</li>
+<li>Ventoy 菜单里选 <strong><code>gparted-live-x.x.x-amd64.iso</code></strong> → 回车</li>
+<li>GParted Live 会连问 3 个问题（Keymap &#x2F; Language &#x2F; Mode），<strong>一路回车</strong>即可</li>
+<li>进桌面后 GParted <strong>自动打开，且已是 root</strong></li>
+</ol>
+<p>进桌面第一件事（防止息屏让你以为死机了）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xset -dpms; xset s off</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-5-GParted-操作（核心，最高风险）"><a href="#4-5-GParted-操作（核心，最高风险）" class="headerlink" title="4.5 GParted 操作（核心，最高风险）"></a>4.5 GParted 操作（核心，最高风险）</h3><p><strong>右上角下拉框选 <code>/dev/nvme0n1</code></strong>，然后<strong>三查</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">├─ p5  ntfs        292.97 GiB   ← F:，别动</span><br><span class="line">├─ unallocated      92.97 GiB   ← 原 E 盘 ★ 必须在 swap 左边</span><br><span class="line">├─ p6  linux-swap    15.26 GiB  ← 待删除</span><br><span class="line">├─ p7  ext4         184.74 GiB  ← 待左移扩容</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><input disabled="" type="checkbox"> 那块 <strong>92.97 GiB 未分配</strong>存在，且紧贴 <strong>linux-swap 左边</strong></li>
+<li><input disabled="" type="checkbox"> swap 是 <strong>15.26 GiB</strong></li>
+<li><input disabled="" type="checkbox"> ext4 是 <strong>184.74 GiB</strong></li>
+</ul>
+<p><strong>任一条不符 → 关掉 GParted，重启回 Ubuntu，不要点 Apply。</strong></p>
+<p><strong>步骤 1：删 swap</strong><br>右键 <code>linux-swap</code> → <strong>Delete</strong>。此时只是<strong>排队</strong>，界面下方会列出待执行操作，<strong>先不要 Apply</strong>。</p>
+<p><strong>步骤 2：记录 ext4 的 UUID</strong><br>右键 <code>ext4</code> → <strong>Information</strong> → 抄下 UUID（应该和你 4.2 记的一致）→ 关闭。</p>
+<p><strong>步骤 3：左移 + 扩容（关键动作）</strong><br>右键 <code>ext4</code> → <strong>Resize&#x2F;Move</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>输入框</th>
+<th>设成</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Free space preceding (MiB)</strong></td>
+<td><strong><code>0</code></strong></td>
+</tr>
+<tr>
+<td><strong>New size (MiB)</strong></td>
+<td>自动变成约 <strong><code>300002</code></strong></td>
+</tr>
+<tr>
+<td><strong>Free space following (MiB)</strong></td>
+<td><strong>不动</strong></td>
+</tr>
+</tbody></table>
+<p><code>Free space preceding = 0</code> 这一下，就是”把整个 184.74 GiB 的文件系统平移到左边” —— 它会真的去搬 184 GiB 数据，所以慢。</p>
+<p><strong>步骤 4：核对队列（只能有两条）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.  Delete  /dev/nvme0n1p6  (linux-swap)</span><br><span class="line">2.  Move    /dev/nvme0n1p7  (ext4)</span><br></pre></td></tr></table></figure>
+
+<p>多一条、少一条、顺序不对 → 菜单 <strong>Edit → Undo Last Operation</strong> 逐条撤销重来。<strong>绝不能</strong>出现针对 p3 &#x2F; p5 &#x2F; p8 的操作。</p>
+<p><strong>步骤 5：执行</strong><br>点绿色对勾 <strong>✓ Apply All Operations</strong> →</p>
+<ul>
+<li>「about to apply the pending operations」→ <strong>Apply</strong></li>
+<li>「Moving a partition might cause your operating system to fail to boot」→ <strong>OK</strong>（<strong>这是预期提示，不是出错</strong>）</li>
+<li>「e2fsck 需要检查文件系统」→ <strong>Fix &#x2F; Yes</strong></li>
+</ul>
+<p>然后就是等：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>耗时</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>删 swap</td>
+<td>几秒</td>
+</tr>
+<tr>
+<td>检查 ext4</td>
+<td>1–3 分钟</td>
+</tr>
+<tr>
+<td><strong>搬运 184 GiB 数据（Move）</strong></td>
+<td><strong>30–60 分钟</strong>，进度条会长时间”看着不动”</td>
+</tr>
+<tr>
+<td>扩容 resize2fs</td>
+<td>1–5 分钟</td>
+</tr>
+</tbody></table>
+<p><strong>判断是否真卡死：看笔记本的硬盘指示灯。</strong> 偶尔还在闪 &#x3D; 在干活，继续等。<br><strong>任何情况下都不要强行断电</strong> —— 这是全文最危险的地方。</p>
+<ol start="6">
+<li>直到 <strong>「All operations successfully completed」</strong> → <strong>Close</strong></li>
+</ol>
+<h3 id="4-6-Live-里立即验证"><a href="#4-6-Live-里立即验证" class="headerlink" title="4.6 Live 里立即验证"></a>4.6 Live 里立即验证</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> partprobe /dev/nvme0n1</span><br><span class="line">lsblk -o NAME,SIZE,FSTYPE,UUID /dev/nvme0n1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><input disabled="" type="checkbox"> swap 分区（p6）<strong>已消失</strong></li>
+<li><input disabled="" type="checkbox"> ext4 大小 ≈ <strong>292.9G</strong></li>
+<li><input disabled="" type="checkbox"> UUID <strong>和之前记录的一致</strong></li>
+</ul>
+<p>我这次的精确结果（和事先预测值<strong>一扇区不差</strong>）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">p5  起始 659922944    292.97 GiB   （F:，未变）</span><br><span class="line">p7  起始 1274320896   292.97 GiB   ← 起始正好落到原 E 盘起点</span><br><span class="line">p8  起始 1890670592   52.07 GiB   （D:，未变）</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-7-顺手只读检查-fstab（不用改）"><a href="#4-7-顺手只读检查-fstab（不用改）" class="headerlink" title="4.7 顺手只读检查 fstab（不用改）"></a>4.7 顺手只读检查 fstab（不用改）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">mkdir</span> -p /mnt/ubuntu</span><br><span class="line"><span class="built_in">sudo</span> mount -o ro /dev/nvme0n1p7 /mnt/ubuntu</span><br><span class="line">grep -n swap /mnt/ubuntu/etc/fstab</span><br><span class="line"><span class="built_in">sudo</span> umount /mnt/ubuntu</span><br></pre></td></tr></table></figure>
+
+<p>预期：swap 那一行<strong>行首有 <code>#</code></strong>（4.3 节已经改好了）。</p>
+<h3 id="4-8-重启进-Ubuntu"><a href="#4-8-重启进-Ubuntu" class="headerlink" title="4.8 重启进 Ubuntu"></a>4.8 重启进 Ubuntu</h3><p>GParted Live 里关机 → <strong>拔掉 U 盘</strong> → 开机 → GRUB → Ubuntu。</p>
+<p><strong>为什么大概率能进？</strong> GRUB 用 <code>search --fs-uuid</code> 按<strong>文件系统 UUID</strong>找根分区，而左移<strong>保留了 UUID</strong>；EFI 分区从头到尾没被动过。</p>
+<h3 id="4-9-重建-swapfile-刷引导-最终验证"><a href="#4-9-重建-swapfile-刷引导-最终验证" class="headerlink" title="4.9 重建 swapfile + 刷引导 + 最终验证"></a>4.9 重建 swapfile + 刷引导 + 最终验证</h3><p>进入系统后：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1) 创建 swapfile 替代被删的 swap 分区</span></span><br><span class="line"><span class="built_in">sudo</span> fallocate -l 16G /swapfile</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">chmod</span> 600 /swapfile</span><br><span class="line"><span class="built_in">sudo</span> mkswap /swapfile</span><br><span class="line"><span class="built_in">sudo</span> swapon /swapfile</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;/swapfile none swap sw 0 0&#x27;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/fstab</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2) ROS / 编译场景建议降低换出倾向</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;vm.swappiness=10&#x27;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> /etc/sysctl.d/99-swappiness.conf</span><br><span class="line"><span class="built_in">sudo</span> sysctl --system</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3) 刷新 initramfs 和 GRUB（重要，别省）</span></span><br><span class="line"><span class="built_in">sudo</span> update-initramfs -u -k all</span><br><span class="line"><span class="built_in">sudo</span> update-grub</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4) 最终自检</span></span><br><span class="line"><span class="built_in">df</span> -h /</span><br><span class="line">swapon --show</span><br><span class="line">free -h</span><br><span class="line">findmnt --verify</span><br><span class="line">systemctl --failed</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果 <code>mkswap</code> 报 <strong>「swapfile has holes」</strong>，说明 <code>fallocate</code> 生成的是稀疏文件，改用 <code>sudo dd if=/dev/zero of=/swapfile bs=1M count=16384 status=progress</code> 重建。</p>
+</blockquote>
+<h3 id="4-10-结果对照"><a href="#4-10-结果对照" class="headerlink" title="4.10 结果对照"></a>4.10 结果对照</h3><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>扩容前</th>
+<th>扩容后</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>根分区 ext4</td>
+<td>184.74 GiB</td>
+<td><strong>292.97 GiB</strong></td>
+</tr>
+<tr>
+<td><code>df -h /</code></td>
+<td>181G（可用 83G）</td>
+<td><strong>288G（可用 169G）</strong></td>
+</tr>
+<tr>
+<td>根分区 UUID</td>
+<td><code>58f902e2-…</code></td>
+<td><strong>不变</strong> ✅</td>
+</tr>
+<tr>
+<td>swap</td>
+<td>15.3G 分区</td>
+<td><strong><code>/swapfile</code> 16G</strong></td>
+</tr>
+<tr>
+<td>失败 systemd 单元</td>
+<td>—</td>
+<td><strong>0 个</strong></td>
+</tr>
+<tr>
+<td>GRUB</td>
+<td>—</td>
+<td>Ubuntu + Windows Boot Manager 都在</td>
+</tr>
+<tr>
+<td>其它分区（C&#x2F;F&#x2F;D&#x2F;EFI&#x2F;恢复）</td>
+<td>—</td>
+<td><strong>UUID、卷标、偏移全部未变</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-可选收尾：再白捡-11-GB"><a href="#5-可选收尾：再白捡-11-GB" class="headerlink" title="5. 可选收尾：再白捡 11 GB"></a>5. 可选收尾：再白捡 11 GB</h2><p>ext4 默认给 root 保留 <strong>5%</strong> 的空间做防碎片缓冲。桌面机器完全用不到这么多，改成 1%：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tune2fs -m 1 /dev/nvme0n1p7</span><br><span class="line"><span class="built_in">df</span> -h /</span><br></pre></td></tr></table></figure>
+
+<p>293 GiB 的分区，这一下就能多出 <strong>约 11.7 GB</strong> 可用空间。（服务器 &#x2F; 关键生产环境别这么干，桌面无所谓。）</p>
+<hr>
+<h2 id="6-如果空闲空间在另一块盘上（情况-D）"><a href="#6-如果空闲空间在另一块盘上（情况-D）" class="headerlink" title="6. 如果空闲空间在另一块盘上（情况 D）"></a>6. 如果空闲空间在<strong>另一块盘</strong>上（情况 D）</h2><p>这是最容易被误解的一点：<strong>分区只能和同一块盘上相邻的空闲合并。</strong> 你有两块盘、第二块空着 500G，<strong>也没法把根分区”扩大”</strong>。</p>
+<p>正确的思路是<strong>把吃空间的东西搬过去</strong>，而不是扩大根分区。按推荐程度排序：</p>
+<h3 id="方案-1（最推荐）：新盘挂到-data，把大目录搬过去"><a href="#方案-1（最推荐）：新盘挂到-data，把大目录搬过去" class="headerlink" title="方案 1（最推荐）：新盘挂到 /data，把大目录搬过去"></a>方案 1（最推荐）：新盘挂到 <code>/data</code>，把大目录搬过去</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1) 格式化新盘/新分区（⚠️ 会清空该分区，确认设备名！）</span></span><br><span class="line"><span class="built_in">sudo</span> mkfs.ext4 -L data /dev/nvme1n1p1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2) 取 UUID，写进 fstab —— 注意用 UUID 而不是设备名</span></span><br><span class="line"><span class="built_in">sudo</span> blkid /dev/nvme1n1p1</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">mkdir</span> -p /data</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;UUID=&lt;新盘UUID&gt; /data ext4 defaults,nofail 0 2&#x27;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/fstab</span><br><span class="line"><span class="built_in">sudo</span> mount -a</span><br><span class="line"><span class="built_in">df</span> -h /data</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>nofail</code> 很关键</strong>：万一下次这块盘没插&#x2F;挂了，系统不会卡在开机自检里进 emergency mode。</p>
+</blockquote>
+<p>然后把大头目录搬过去（<strong>用 <code>rsync</code> 而不是 <code>mv</code></strong>，确认无误后再删源）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> rsync -aHAX --info=progress2 /home/<span class="variable">$USER</span>/datasets/ /data/datasets/</span><br></pre></td></tr></table></figure>
+
+<p>具体哪些目录最值得搬：</p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Docker 数据</td>
+<td><code>/var/lib/docker</code>，或改 <code>/etc/docker/daemon.json</code> 里的 <code>data-root</code> 到 <code>/data/docker</code></td>
+</tr>
+<tr>
+<td>数据集 &#x2F; 模型权重</td>
+<td>深度学习场景动辄几十上百 G，收益最大</td>
+</tr>
+<tr>
+<td>ROS 工作空间</td>
+<td><code>catkin_ws</code> &#x2F; <code>colcon_ws</code>，编译产物很大</td>
+</tr>
+<tr>
+<td><code>~/.cache</code></td>
+<td>浏览器、pip、huggingface 缓存，纯可再生</td>
+</tr>
+</tbody></table>
+<p>搬完用 <strong>bind mount</strong> 让原路径依然可用（比符号链接更可靠，很多程序不认符号链接）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> mount --<span class="built_in">bind</span> /data/cache /home/<span class="variable">$USER</span>/.cache</span><br><span class="line"><span class="comment"># 写进 fstab 永久化（bind 挂载也要 nofail）</span></span><br><span class="line"><span class="built_in">printf</span> <span class="string">&#x27;/data/cache /home/%s/.cache none bind,nofail 0 0\n&#x27;</span> <span class="string">&quot;<span class="variable">$USER</span>&quot;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/fstab</span><br></pre></td></tr></table></figure>
+
+<h3 id="方案-2：把整块-home-迁到新盘"><a href="#方案-2：把整块-home-迁到新盘" class="headerlink" title="方案 2：把整块 /home 迁到新盘"></a>方案 2：把整块 <code>/home</code> 迁到新盘</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从 Live 环境或单用户模式做，确保没有程序在写 /home</span></span><br><span class="line"><span class="built_in">sudo</span> rsync -aHAX /home/ /mnt/newhome/</span><br><span class="line"><span class="comment"># 改 fstab 里 /home 那一行为新盘 UUID，挂载点 /home</span></span><br><span class="line"><span class="built_in">sudo</span> reboot</span><br></pre></td></tr></table></figure>
+
+<p>这样根分区只剩系统和软件，能显著缓解空间压力。</p>
+<h3 id="方案-3（进阶，不推荐新手）：根分区整体迁到新盘"><a href="#方案-3（进阶，不推荐新手）：根分区整体迁到新盘" class="headerlink" title="方案 3（进阶，不推荐新手）：根分区整体迁到新盘"></a>方案 3（进阶，不推荐新手）：根分区整体迁到新盘</h3><p><code>rsync</code> 复制根文件系统 → 改 fstab &#x2F; 重装 GRUB → 从新盘启动。风险等同于重装系统出错，<strong>收益却不如方案 1</strong>，一般没必要。</p>
+<h3 id="顺手能做的：把-swap-挪到另一块盘"><a href="#顺手能做的：把-swap-挪到另一块盘" class="headerlink" title="顺手能做的：把 swap 挪到另一块盘"></a>顺手能做的：把 swap 挪到另一块盘</h3><p>swap 是纯可再生的，放哪都行。把现有的 swap 分区删掉、换成另一块盘上的 swapfile，能<strong>腾出 Ubuntu 系统盘上 15~30G 的连续空间</strong> —— 如果这块空间正好贴着根分区，你就从情况 C 变成了情况 B 甚至 A。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> fallocate -l 16G /data/swapfile</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">chmod</span> 600 /data/swapfile</span><br><span class="line"><span class="built_in">sudo</span> mkswap /data/swapfile</span><br><span class="line"><span class="built_in">sudo</span> swapon /data/swapfile</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;/data/swapfile none swap sw 0 0&#x27;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/fstab</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-踩坑合集（12-个，每个都是真金白银）"><a href="#7-踩坑合集（12-个，每个都是真金白银）" class="headerlink" title="7. 踩坑合集（12 个，每个都是真金白银）"></a>7. 踩坑合集（12 个，每个都是真金白银）</h2><table>
+<thead>
+<tr>
+<th>#</th>
+<th>坑</th>
+<th>后果</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><strong>盘符顺序当物理顺序</strong></td>
+<td>以为能从 F 盘分空间，实际物理上够不着，白折腾</td>
+<td>按 <code>Offset</code> 排序看真实布局</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>认死 <code>/dev/nvme0n1p8</code></strong></td>
+<td>删分区后号前移，命令全打在错误的分区上</td>
+<td>永远用 <strong>UUID + 大小</strong> 认设备</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>忘注释 fstab 里的旧 swap 行</strong></td>
+<td>开机卡 90 秒，或进 emergency mode</td>
+<td>删 swap 前就注释掉（本文 4.3）</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>忘查 <code>resume=</code> &#x2F; initramfs 的 resume</strong></td>
+<td>同样卡开机</td>
+<td><code>grep -rn resume= /etc/default/grub</code>、看 <code>/etc/initramfs-tools/conf.d/resume</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>用 rsync 逐文件备份到 exFAT U 盘</strong></td>
+<td>1399 个符号链接全部丢失，且报一堆 <code>Operation not permitted</code></td>
+<td>用 <strong>tar 单文件归档</strong></td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>exFAT + 27 万小文件</strong></td>
+<td>慢到怀疑人生</td>
+<td>同上，tar 顺序写</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>备份到同一块盘</strong></td>
+<td>分区表一坏，备份一起没</td>
+<td>必须另一块物理设备</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>热插拔 U 盘</strong></td>
+<td>内核按 <code>errors=remount-ro</code> 把 exFAT 锁成<strong>只读</strong>，备份<strong>静默失败</strong>（我实际踩到，还白白刷了一小时错误）</td>
+<td>全程别拔；脚本里加”可写性”前置检查</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>低价 USB3.0 U 盘长时间大量写入</strong></td>
+<td>控制器复位、从总线掉线、设备被重新枚举成 <code>sdb</code>，读文件报 <code>输入/输出错误</code>（我也踩到了）</td>
+<td>直连机身 USB 口（别用拓展坞）+ 先做 2GB 写入自检；出问题就退到 USB 2.0 求稳</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>用老版本 Live ISO 扩容新系统</strong></td>
+<td>GParted 报”文件系统有不支持的特性”直接拒绝</td>
+<td><strong>ISO 版本和系统版本一致</strong>；再备一个最新 GParted Live</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>以为 Ubuntu Live 自带 GParted</strong></td>
+<td>Live 里没网、装不了，卡住</td>
+<td>单独下一个 GParted Live ISO 放盘里</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>忘了 <code>update-initramfs</code> &#x2F; <code>update-grub</code></strong></td>
+<td>下次启动可能失败</td>
+<td>收尾两条命令别省</td>
+</tr>
+</tbody></table>
+<h3 id="还有几个”不是坑但反直觉”的点"><a href="#还有几个”不是坑但反直觉”的点" class="headerlink" title="还有几个”不是坑但反直觉”的点"></a>还有几个”不是坑但反直觉”的点</h3><ul>
+<li><strong><code>df -h /</code> 显示的总比分区小</strong>：ext4 保留 5% + 元数据开销。293 GiB 的分区显示 288G 是<strong>正常</strong>的。</li>
+<li><strong>删完分区后，别在 Windows 里”新建卷”</strong>：那块空间会被重新变成 Windows 分区。</li>
+<li><strong>动完分区表后第一次进 Windows 可能变慢或提示磁盘检查</strong>：正常，让它跑完。</li>
+<li><strong>不要搬 EFI 分区和恢复分区</strong>：前者直接开不了机，后者丢恢复功能。</li>
+</ul>
+<hr>
+<h2 id="8-出事了怎么办"><a href="#8-出事了怎么办" class="headerlink" title="8. 出事了怎么办"></a>8. 出事了怎么办</h2><h3 id="8-1-进不去系统：grub-rescue-error-unknown-filesystem"><a href="#8-1-进不去系统：grub-rescue-error-unknown-filesystem" class="headerlink" title="8.1 进不去系统：grub rescue&gt; &#x2F; error: unknown filesystem"></a>8.1 进不去系统：<code>grub rescue&gt;</code> &#x2F; <code>error: unknown filesystem</code></h3><p>重新插 U 盘启动（Ventoy 里选 <strong>Ubuntu ISO</strong> → <strong>Try Ubuntu</strong>，不要点 Install）→ 连网 →</p>
+<p><strong>方案 A：boot-repair（最省事）</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> add-apt-repository ppa:yannubuntu/boot-repair -y</span><br><span class="line"><span class="built_in">sudo</span> apt update &amp;&amp; <span class="built_in">sudo</span> apt install -y boot-repair</span><br><span class="line">boot-repair          <span class="comment"># 选 Recommended repair</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>方案 B：chroot 重装 GRUB（更可控）</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> mount /dev/nvme0n1p7 /mnt/ubuntu         <span class="comment"># 根分区（用实际分区号！）</span></span><br><span class="line"><span class="built_in">sudo</span> mount /dev/nvme0n1p2 /mnt/ubuntu/boot/efi</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> /dev /dev/pts /proc /sys /run; <span class="keyword">do</span> <span class="built_in">sudo</span> mount -B <span class="variable">$i</span> /mnt/ubuntu<span class="variable">$i</span>; <span class="keyword">done</span></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">chroot</span> /mnt/ubuntu</span><br><span class="line">grub-install /dev/nvme0n1</span><br><span class="line">update-grub</span><br><span class="line"><span class="built_in">exit</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> /run /sys /proc /dev/pts /dev; <span class="keyword">do</span> <span class="built_in">sudo</span> umount /mnt/ubuntu<span class="variable">$i</span>; <span class="keyword">done</span></span><br><span class="line"><span class="built_in">sudo</span> umount /mnt/ubuntu/boot/efi</span><br><span class="line"><span class="built_in">sudo</span> umount /mnt/ubuntu</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-2-分区表损坏-中途断电"><a href="#8-2-分区表损坏-中途断电" class="headerlink" title="8.2 分区表损坏 &#x2F; 中途断电"></a>8.2 分区表损坏 &#x2F; 中途断电</h3><ol>
+<li><strong>别重启、别慌</strong></li>
+<li>重新插好电源，重进 Live USB</li>
+<li>先看现状：<code>sudo partprobe /dev/nvme0n1 &amp;&amp; sudo blkid</code></li>
+<li>分区表乱了用 <code>testdisk</code> 扫描恢复：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update &amp;&amp; <span class="built_in">sudo</span> apt install -y testdisk</span><br><span class="line"><span class="built_in">sudo</span> testdisk</span><br><span class="line"><span class="comment"># → Create → 选磁盘 → Intel/EFI GPT → Analyse → Quick Search → 找到分区 → Write</span></span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><strong>实在不行就用第 3.1 节的 tar 备份还原</strong> —— 这也就是为什么备份不能省。</li>
+</ol>
+<h3 id="8-3-品牌机器启动键对照"><a href="#8-3-品牌机器启动键对照" class="headerlink" title="8.3 品牌机器启动键对照"></a>8.3 品牌机器启动键对照</h3><table>
+<thead>
+<tr>
+<th>品牌</th>
+<th>启动菜单键</th>
+<th>BIOS 键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>华硕 ASUS（含 TUF &#x2F; ROG）</strong></td>
+<td><strong><code>Esc</code></strong>（部分机型 <code>F8</code>）</td>
+<td><code>F2</code></td>
+</tr>
+<tr>
+<td><strong>联想 Lenovo &#x2F; 拯救者 Legion</strong></td>
+<td><strong><code>F12</code></strong>（部分需 <code>Fn + F12</code>）</td>
+<td><code>F2</code> 或 <code>Fn + F2</code></td>
+</tr>
+<tr>
+<td>戴尔 Dell</td>
+<td><code>F12</code></td>
+<td><code>F2</code></td>
+</tr>
+<tr>
+<td>惠普 HP</td>
+<td><code>F9</code></td>
+<td><code>F10</code></td>
+</tr>
+<tr>
+<td>宏碁 Acer</td>
+<td><code>F12</code></td>
+<td><code>F2</code></td>
+</tr>
+<tr>
+<td>微星 MSI</td>
+<td><code>F11</code></td>
+<td><code>Del</code></td>
+</tr>
+<tr>
+<td>机械革命 &#x2F; 神舟</td>
+<td><code>F12</code> &#x2F; <code>F7</code></td>
+<td><code>F2</code> &#x2F; <code>Del</code></td>
+</tr>
+<tr>
+<td>小米 &#x2F; 华为</td>
+<td><code>F12</code></td>
+<td><code>F2</code></td>
+</tr>
+</tbody></table>
+<p><strong>如果按键没反应</strong>：先在 Windows 里执行 <code>shutdown /s /t 0</code>（完全关机，不走快速启动），或开机时按住 <code>Shift</code> 点关机，再按启动键。</p>
+<h3 id="8-4-各品牌的两个小差异"><a href="#8-4-各品牌的两个小差异" class="headerlink" title="8.4 各品牌的两个小差异"></a>8.4 各品牌的两个小差异</h3><ul>
+<li><strong>联想拯救者</strong>：如果 BIOS 里硬盘模式是 <strong>Intel RST &#x2F; RAID</strong>，Linux 安装器可能看不到硬盘。需要在 BIOS 里切成 <strong>AHCI</strong>（切之前 Windows 可能蓝屏，要先用 <code>bcdedit /set safeboot minimal</code> 进安全模式切）。这是<strong>装系统阶段</strong>的问题，扩容阶段不受影响，但排查硬盘时要留意。</li>
+<li><strong>华硕机器</strong>：通常带 <code>MyASUS</code>、<code>Recovery</code> 等小分区，在 GParted 里会看到。<strong>别动它们</strong>，删了不影响 Linux 使用，但会丢恢复功能和出厂工具。</li>
+<li><strong>双硬盘机型（很多拯救者 &#x2F; ROG）</strong>：Ubuntu 很可能装在<strong>第二块盘</strong>上。这时要特别小心——<strong>扩容只能在同一块盘内做</strong>，别把 Windows 那块盘的空闲当成可用空间。</li>
+</ul>
+<hr>
+<h2 id="9-检查清单"><a href="#9-检查清单" class="headerlink" title="9. 检查清单"></a>9. 检查清单</h2><p><strong>动手前：</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> 已确认<strong>空闲空间在物理上紧贴根分区哪一侧</strong>（用 <code>Offset</code> 排序或磁盘管理图形视图）</li>
+<li><input disabled="" type="checkbox"> 已确认<strong>不是</strong>“空闲在另一块盘”（那样不能合并，改走第 6 节方案）</li>
+<li><input disabled="" type="checkbox"> 已确认没有开 BitLocker &#x2F; 不是动态磁盘 &#x2F; 不是 Intel RST 模式</li>
+<li><input disabled="" type="checkbox"> Windows 快速启动<strong>已关闭</strong>，休眠<strong>已关闭</strong>（<code>powercfg /h off</code>）</li>
+<li><input disabled="" type="checkbox"> <strong>重要数据已备份到另一块物理设备</strong>，且<strong>校验通过</strong></li>
+<li><input disabled="" type="checkbox"> 已抄下根分区 <strong>UUID</strong>、EFI UUID、<code>/etc/fstab</code> 原文（存手机）</li>
+<li><input disabled="" type="checkbox"> Live USB 已做好（Ventoy + <strong>与系统同版本</strong>的 Ubuntu ISO + GParted Live）</li>
+<li><input disabled="" type="checkbox"> 已测试过 U 盘能启动（可选但强烈建议，先试一次再动真格）</li>
+<li><input disabled="" type="checkbox"> 笔记本<strong>插着电源</strong>，自动挂起已关闭，合盖行为已确认（<code>HandleLidSwitch=lock</code>）</li>
+<li><input disabled="" type="checkbox"> 留出 <strong>1.5 小时</strong>，期间不会被打断</li>
+</ul>
+<p><strong>操作中：</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> GParted 里<strong>三查</strong>（空闲位置 &#x2F; swap 大小 &#x2F; ext4 大小）不符就停手</li>
+<li><input disabled="" type="checkbox"> Resize&#x2F;Move 的 <code>Free space preceding = 0</code></li>
+<li><input disabled="" type="checkbox"> 待执行队列<strong>只有两条</strong>（Delete swap + Move ext4）</li>
+<li><input disabled="" type="checkbox"> Apply 前最后确认电源</li>
+<li><input disabled="" type="checkbox"> 进度条慢 &#x3D; 正常，<strong>看硬盘灯判断死活</strong>，绝不强行断电</li>
+</ul>
+<p><strong>重启后：</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>lsblk</code> 里大小对了、<strong>UUID 没变</strong></li>
+<li><input disabled="" type="checkbox"> <code>df -h /</code> 容量对了</li>
+<li><input disabled="" type="checkbox"> swapfile 建好、<code>swapon --show</code> 有 16G</li>
+<li><input disabled="" type="checkbox"> <code>findmnt --verify</code> 无错误、<code>systemctl --failed</code> 为 0</li>
+<li><input disabled="" type="checkbox"> <code>update-initramfs -u -k all</code> + <code>update-grub</code> 无报错</li>
+<li><input disabled="" type="checkbox"> 冷启动复测一次，Windows 也进一次确认数据完好</li>
+<li><input disabled="" type="checkbox"> 备份保留 1–2 周再删</li>
+</ul>
+<hr>
+<h2 id="10-FAQ"><a href="#10-FAQ" class="headerlink" title="10. FAQ"></a>10. FAQ</h2><p><strong>Q：能边用 Ubuntu 边扩容吗？</strong><br>A：只有”空闲在右边”（情况 A）或 LVM（情况 E）可以。只要需要<strong>左移</strong>，就必须 Live USB —— 运行中的系统动不了自己所在的分区。</p>
+<p><strong>Q：为什么不干脆重装？</strong><br>A：如果你的环境是”装完就没动过”，重装更快。但跑 ROS &#x2F; CUDA &#x2F; Docker 的机器，环境重配通常要 1–3 天，而本文这条路我实测 <strong>50 分钟</strong>。</p>
+<p><strong>Q：为什么不新建一个分区挂上去，非要合并？</strong><br>A：这其实是<strong>很合理的替代方案</strong>（尤其双硬盘机器，见第 6 节）。合并的好处是”根分区不再有 200G 的心理天花板”；不合并的好处是零风险。<strong>如果只是某个目录（数据集&#x2F;Docker）吃空间，挂载新分区是更优解。</strong></p>
+<p><strong>Q：能扩到多大？</strong><br>A：上限是”根分区右边所有空闲 + 它自己”。我这次吃掉了左边的 92.97G（原 E 盘）和中间的 15.26G（swap），变成 292.97 GiB。</p>
+<p><strong>Q：<code>Free space following</code> 也设成 0 会怎样？</strong><br>A：会顺便吃掉根分区右边那 0.93 GiB 的既有空隙。收益很小、操作变复杂，我保持原样了。</p>
+<p><strong>Q：扩容后 Windows 会受影响吗？</strong><br>A：不会。C &#x2F; F &#x2F; D 的偏移、大小、UUID 全部未变。但<strong>第一次进 Windows 可能提示磁盘检查</strong>，让它跑完即可。</p>
+<p><strong>Q：为什么不把 5% 保留块留着？</strong><br>A：桌面机器用不到。<code>tune2fs -m 1</code> 能白捡约 4% 空间（我这个分区是 11.7 GB）。服务器另说。</p>
+<p><strong>Q：Ubuntu 装在第二块盘、Windows 在第一块盘，能扩容吗？</strong><br>A：能，但要<strong>从 Ubuntu 那块盘</strong>上腾空闲空间，动 Windows 盘是没用的（物理上不在一根线上）。</p>
+<hr>
+<h2 id="11-写在最后"><a href="#11-写在最后" class="headerlink" title="11. 写在最后"></a>11. 写在最后</h2><p>这次扩容最深的体会不是”怎么点 GParted”，而是：</p>
+<p><strong>动手之前，花 10 分钟搞清楚”我那块空闲空间到底在物理上的哪个位置”。</strong> 同样是”扩容 100G”，位置在右边是 3 分钟的在线操作，位置在左边是 1 小时的不可逆手术，位置在另一块盘则<strong>根本不可能</strong>。</p>
+<p>第二深的体会是：<strong>备份这件事，比扩容本身更容易做错。</strong> 同盘备份等于没备份、exFAT 存不了符号链接、U 盘热插拔会让备份静默失败、便宜的 U 盘长时间写入会掉线 —— 我这一趟把这四个坑全踩了一遍，也都写进第 7 节了。</p>
+<p>最后一句：<strong>分区操作是少数”没有撤销键”的事。</strong> 插好电源、别碰机器、别断电，剩下的交给时间就好。</p>
+<hr>
+<p><em>本文记录于 2026-10-16，机器为 ASUS TUF Gaming A15 FA507UV（1TB NVMe · GPT · UEFI · Windows 11 + Ubuntu 24.04.5 LTS）。所有操作请自行评估风险，务必先备份。</em></p>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/Ubuntu/">Ubuntu</a><a class="post-meta__tags" href="/tags/%E5%8F%8C%E7%B3%BB%E7%BB%9F/">双系统</a><a class="post-meta__tags" href="/tags/%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA/">磁盘分区</a><a class="post-meta__tags" href="/tags/GParted/">GParted</a><a class="post-meta__tags" href="/tags/%E8%BF%90%E7%BB%B4/">运维</a></div><div class="post-share"><div class="social-share" data-image="/img/posts/expand-ubuntu-root-partition/cover.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/10/09/china-folded-modernity/" title="中国的折叠：顶层全屋智能，一楼煤球炉"><img class="cover" src="/img/china-folded-cover.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">中国的折叠：顶层全屋智能，一楼煤球炉</div></div><div class="info-2"><div class="info-item-1">现代的两个时钟我在学校的电脑前，用 AI 三分钟写完了一份实验报告。 我在老家的炒锅前，看母亲用三分钟把一个菜切好放进了锅里。 这两个三分钟，都是真实的现代。  我们这一代人很容易产生一种错觉：以为整个国家都在以同样的速度往前冲。地铁里人人刷着 AI 资讯，朋友圈里都在讨论大模型，好像明天就是赛博朋克。 但只要买一张回老家的票，你就会发现——时间在很多地方，是慢的。 家门口的枣树还在，小卖部的东西还是那个价，田里的麦子还是按节气种。没有人关心什么是 Vibe coding，也没有人需要知道 API 是什么。他们的世界里，AI 是一个遥远的词，远不如今天的菜价实在。 这不是落后，这是现代的纵深。  一个国家太大了，大到可以同时装下硅谷和麦田，装下量子计算机和锄头，可以装下”颠覆一切”的野心和”日子照旧”的从容。 他们不是矛盾的，他们是叠加在一起的。就像一栋楼，顶层住户已经用上了全屋智能，一楼的邻居还在用着煤球炉，但他们抬头看见的是同一片天花板。  我们这些在顶层和一楼之间来回跑的人，最能感受到那种割裂。 在学校，我们是 AI 的熟练使用者；回到家，我们是个连择菜都择不明白的人。 在...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/kingdream-cn/kingdream-cn.github.io@main/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">KingDream</div><div class="author-info-description">分享技术，记录成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">29</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kingdream-cn"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kingdream-cn" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2730970347@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客！这里记录我在机器人开发领域的学习日常、踩坑心得与技术沉淀，方向涵盖 ROS、ROS2、SLAM、运动规划、嵌入式及系统架构等。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-TL-DR-%C2%B7-%E4%B8%89%E5%88%86%E9%92%9F%E7%89%88"><span class="toc-number">1.</span> <span class="toc-text">0. TL;DR · 三分钟版</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E6%83%85%E5%86%B5%EF%BC%8C%E9%9A%BE%E5%BA%A6%E5%A4%A9%E5%B7%AE%E5%9C%B0%E5%88%AB"><span class="toc-number">1.1.</span> <span class="toc-text">三种情况，难度天差地别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%94%E6%9D%A1%E9%93%81%E5%BE%8B%EF%BC%88%E8%B4%B4%E5%A2%99%E4%B8%8A%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">五条铁律（贴墙上）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%85%88%E6%90%9E%E6%87%82%E4%B8%89%E4%B8%AA%E5%8E%9F%E7%90%86%EF%BC%88%E4%B8%8D%E6%87%82%E5%8E%9F%E7%90%86%E5%BF%85%E8%B8%A9%E5%9D%91%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">1. 先搞懂三个原理（不懂原理必踩坑）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E7%A9%BA%E9%97%B2%E7%A9%BA%E9%97%B4%E5%9C%A8%E2%80%9D%E5%8F%B3%E8%BE%B9%E2%80%9D%E8%BF%98%E6%98%AF%E2%80%9D%E5%B7%A6%E8%BE%B9%E2%80%9D%EF%BC%8C%E6%98%AF%E4%B8%A4%E4%BB%B6%E5%AE%8C%E5%85%A8%E4%B8%8D%E5%90%8C%E7%9A%84%E4%BA%8B"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 空闲空间在”右边”还是”左边”，是两件完全不同的事</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E7%9B%98%E7%AC%A6%E9%A1%BA%E5%BA%8F-%E2%89%A0-%E7%89%A9%E7%90%86%E9%A1%BA%E5%BA%8F%EF%BC%88%E6%9C%80%E5%AE%B9%E6%98%93%E7%8A%AF%E7%9A%84%E9%94%99%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 盘符顺序 ≠ 物理顺序（最容易犯的错）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E5%88%86%E5%8C%BA%E5%8F%B7%E4%BC%9A%E5%8F%98%EF%BC%8CUUID-%E4%B8%8D%E4%BC%9A%E5%8F%98"><span class="toc-number">2.3.</span> <span class="toc-text">1.3 分区号会变，UUID 不会变</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%85%88%E5%88%A4%E6%96%AD%E4%BD%A0%E6%98%AF%E5%93%AA%E7%A7%8D%E6%83%85%E5%86%B5%EF%BC%88%E5%90%AB%E8%87%AA%E6%9F%A5%E5%91%BD%E4%BB%A4%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">2. 先判断你是哪种情况（含自查命令）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E5%86%B5-A%EF%BC%9A%E7%A9%BA%E9%97%B2%E7%B4%A7%E8%B4%B4%E6%A0%B9%E5%88%86%E5%8C%BA%E5%8F%B3%E4%BE%A7"><span class="toc-number">3.1.</span> <span class="toc-text">情况 A：空闲紧贴根分区右侧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E5%86%B5-B%EF%BC%9A%E7%A9%BA%E9%97%B2%E7%B4%A7%E8%B4%B4%E6%A0%B9%E5%88%86%E5%8C%BA%E5%B7%A6%E4%BE%A7-%E2%86%90-%E6%88%91%E8%BF%99%E6%AC%A1"><span class="toc-number">3.2.</span> <span class="toc-text">情况 B：空闲紧贴根分区左侧 ← 我这次</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E5%86%B5-C%EF%BC%9A%E4%B8%AD%E9%97%B4%E9%9A%94%E7%9D%80%E5%88%AB%E7%9A%84%E5%88%86%E5%8C%BA"><span class="toc-number">3.3.</span> <span class="toc-text">情况 C：中间隔着别的分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E5%86%B5-D%EF%BC%9A%E7%A9%BA%E9%97%B2%E5%9C%A8%E5%8F%A6%E4%B8%80%E5%9D%97%E7%9B%98%E4%B8%8A"><span class="toc-number">3.4.</span> <span class="toc-text">情况 D：空闲在另一块盘上</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E5%86%B5-E%EF%BC%9A%E4%BD%A0%E8%A3%85-Ubuntu-%E6%97%B6%E9%80%89%E4%BA%86-LVM%EF%BC%88%E6%9C%80%E5%B9%B8%E8%BF%90%E7%9A%84%E6%83%85%E5%86%B5%EF%BC%89"><span class="toc-number">3.5.</span> <span class="toc-text">情况 E：你装 Ubuntu 时选了 LVM（最幸运的情况）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E9%9C%80%E8%A6%81%E5%87%86%E5%A4%87%E4%BB%80%E4%B9%88"><span class="toc-number">4.</span> <span class="toc-text">3. 需要准备什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%A4%87%E4%BB%BD%EF%BC%88%E5%94%AF%E4%B8%80%E4%B8%8D%E8%83%BD%E7%9C%81%E7%9A%84%E4%B8%80%E6%AD%A5%EF%BC%8C%E4%B9%9F%E6%98%AF%E6%9C%80%E5%AE%B9%E6%98%93%E5%81%9A%E9%94%99%E7%9A%84%E4%B8%80%E6%AD%A5%EF%BC%89"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 备份（唯一不能省的一步，也是最容易做错的一步）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E4%BF%A1%E6%81%AF%E8%AE%B0%E5%BD%95%E8%A1%A8%EF%BC%88%E5%85%B3%E6%9C%BA%E4%B9%8B%E5%90%8E%E5%B0%B1%E6%9F%A5%E4%B8%8D%E5%88%B0%E7%94%B5%E8%84%91%E4%BA%86%EF%BC%8C%E5%BF%85%E9%A1%BB%E6%8A%84%E4%B8%8B%E6%9D%A5%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 信息记录表（关机之后就查不到电脑了，必须抄下来）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Windows-%E4%BE%A7%E5%87%86%E5%A4%87%EF%BC%88%E4%B8%8D%E5%81%9A%E8%BF%99%E5%87%A0%E6%AD%A5%EF%BC%8C%E5%90%8E%E9%9D%A2%E5%BF%85%E5%87%BA%E9%97%AE%E9%A2%98%EF%BC%89"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 Windows 侧准备（不做这几步，后面必出问题）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%88%B6%E4%BD%9C-Live-USB"><span class="toc-number">4.4.</span> <span class="toc-text">3.4 制作 Live USB</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E7%89%A9%E7%90%86%E5%87%86%E5%A4%87"><span class="toc-number">4.5.</span> <span class="toc-text">3.5 物理准备</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E6%88%98%EF%BC%9A%E6%88%91%E8%BF%99%E6%AC%A1%E7%9A%84%E5%AE%8C%E6%95%B4%E8%BF%87%E7%A8%8B%EF%BC%88%E6%83%85%E5%86%B5-B%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">4. 实战：我这次的完整过程（情况 B）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-0-%E6%88%91%E7%9A%84%E5%88%9D%E5%A7%8B%E5%B8%83%E5%B1%80"><span class="toc-number">5.1.</span> <span class="toc-text">4.0 我的初始布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-Windows-%E4%BE%A7%EF%BC%9A%E5%88%A0%E6%8E%89-E-%E7%9B%98%EF%BC%8C%E6%8B%BF%E5%88%B0-92-97G-%E7%A9%BA%E9%97%B2"><span class="toc-number">5.2.</span> <span class="toc-text">4.1 Windows 侧：删掉 E 盘，拿到 92.97G 空闲</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-Ubuntu-%E4%BE%A7%EF%BC%9A%E5%A4%87%E4%BB%BD-%E8%AE%B0%E5%BD%95"><span class="toc-number">5.3.</span> <span class="toc-text">4.2 Ubuntu 侧：备份 + 记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E6%8F%90%E5%89%8D%E6%94%B9-etc-fstab%EF%BC%88%E8%BF%99%E6%98%AF%E6%88%91%E5%AF%B9%E8%80%81%E6%95%99%E7%A8%8B%E7%9A%84%E4%B8%80%E4%B8%AA%E6%94%B9%E8%BF%9B%EF%BC%89"><span class="toc-number">5.4.</span> <span class="toc-text">4.3 提前改 &#x2F;etc&#x2F;fstab（这是我对老教程的一个改进）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E5%85%B3%E6%9C%BA-%E2%86%92-%E4%BB%8E-U-%E7%9B%98%E5%90%AF%E5%8A%A8"><span class="toc-number">5.5.</span> <span class="toc-text">4.4 关机 → 从 U 盘启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-GParted-%E6%93%8D%E4%BD%9C%EF%BC%88%E6%A0%B8%E5%BF%83%EF%BC%8C%E6%9C%80%E9%AB%98%E9%A3%8E%E9%99%A9%EF%BC%89"><span class="toc-number">5.6.</span> <span class="toc-text">4.5 GParted 操作（核心，最高风险）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-6-Live-%E9%87%8C%E7%AB%8B%E5%8D%B3%E9%AA%8C%E8%AF%81"><span class="toc-number">5.7.</span> <span class="toc-text">4.6 Live 里立即验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-7-%E9%A1%BA%E6%89%8B%E5%8F%AA%E8%AF%BB%E6%A3%80%E6%9F%A5-fstab%EF%BC%88%E4%B8%8D%E7%94%A8%E6%94%B9%EF%BC%89"><span class="toc-number">5.8.</span> <span class="toc-text">4.7 顺手只读检查 fstab（不用改）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-8-%E9%87%8D%E5%90%AF%E8%BF%9B-Ubuntu"><span class="toc-number">5.9.</span> <span class="toc-text">4.8 重启进 Ubuntu</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-9-%E9%87%8D%E5%BB%BA-swapfile-%E5%88%B7%E5%BC%95%E5%AF%BC-%E6%9C%80%E7%BB%88%E9%AA%8C%E8%AF%81"><span class="toc-number">5.10.</span> <span class="toc-text">4.9 重建 swapfile + 刷引导 + 最终验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-10-%E7%BB%93%E6%9E%9C%E5%AF%B9%E7%85%A7"><span class="toc-number">5.11.</span> <span class="toc-text">4.10 结果对照</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%8F%AF%E9%80%89%E6%94%B6%E5%B0%BE%EF%BC%9A%E5%86%8D%E7%99%BD%E6%8D%A1-11-GB"><span class="toc-number">6.</span> <span class="toc-text">5. 可选收尾：再白捡 11 GB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%A6%82%E6%9E%9C%E7%A9%BA%E9%97%B2%E7%A9%BA%E9%97%B4%E5%9C%A8%E5%8F%A6%E4%B8%80%E5%9D%97%E7%9B%98%E4%B8%8A%EF%BC%88%E6%83%85%E5%86%B5-D%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">6. 如果空闲空间在另一块盘上（情况 D）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88-1%EF%BC%88%E6%9C%80%E6%8E%A8%E8%8D%90%EF%BC%89%EF%BC%9A%E6%96%B0%E7%9B%98%E6%8C%82%E5%88%B0-data%EF%BC%8C%E6%8A%8A%E5%A4%A7%E7%9B%AE%E5%BD%95%E6%90%AC%E8%BF%87%E5%8E%BB"><span class="toc-number">7.1.</span> <span class="toc-text">方案 1（最推荐）：新盘挂到 &#x2F;data，把大目录搬过去</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88-2%EF%BC%9A%E6%8A%8A%E6%95%B4%E5%9D%97-home-%E8%BF%81%E5%88%B0%E6%96%B0%E7%9B%98"><span class="toc-number">7.2.</span> <span class="toc-text">方案 2：把整块 &#x2F;home 迁到新盘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88-3%EF%BC%88%E8%BF%9B%E9%98%B6%EF%BC%8C%E4%B8%8D%E6%8E%A8%E8%8D%90%E6%96%B0%E6%89%8B%EF%BC%89%EF%BC%9A%E6%A0%B9%E5%88%86%E5%8C%BA%E6%95%B4%E4%BD%93%E8%BF%81%E5%88%B0%E6%96%B0%E7%9B%98"><span class="toc-number">7.3.</span> <span class="toc-text">方案 3（进阶，不推荐新手）：根分区整体迁到新盘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%BA%E6%89%8B%E8%83%BD%E5%81%9A%E7%9A%84%EF%BC%9A%E6%8A%8A-swap-%E6%8C%AA%E5%88%B0%E5%8F%A6%E4%B8%80%E5%9D%97%E7%9B%98"><span class="toc-number">7.4.</span> <span class="toc-text">顺手能做的：把 swap 挪到另一块盘</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E8%B8%A9%E5%9D%91%E5%90%88%E9%9B%86%EF%BC%8812-%E4%B8%AA%EF%BC%8C%E6%AF%8F%E4%B8%AA%E9%83%BD%E6%98%AF%E7%9C%9F%E9%87%91%E7%99%BD%E9%93%B6%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">7. 踩坑合集（12 个，每个都是真金白银）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%98%E6%9C%89%E5%87%A0%E4%B8%AA%E2%80%9D%E4%B8%8D%E6%98%AF%E5%9D%91%E4%BD%86%E5%8F%8D%E7%9B%B4%E8%A7%89%E2%80%9D%E7%9A%84%E7%82%B9"><span class="toc-number">8.1.</span> <span class="toc-text">还有几个”不是坑但反直觉”的点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%87%BA%E4%BA%8B%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E"><span class="toc-number">9.</span> <span class="toc-text">8. 出事了怎么办</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E8%BF%9B%E4%B8%8D%E5%8E%BB%E7%B3%BB%E7%BB%9F%EF%BC%9Agrub-rescue-error-unknown-filesystem"><span class="toc-number">9.1.</span> <span class="toc-text">8.1 进不去系统：grub rescue&gt; &#x2F; error: unknown filesystem</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E5%88%86%E5%8C%BA%E8%A1%A8%E6%8D%9F%E5%9D%8F-%E4%B8%AD%E9%80%94%E6%96%AD%E7%94%B5"><span class="toc-number">9.2.</span> <span class="toc-text">8.2 分区表损坏 &#x2F; 中途断电</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E5%93%81%E7%89%8C%E6%9C%BA%E5%99%A8%E5%90%AF%E5%8A%A8%E9%94%AE%E5%AF%B9%E7%85%A7"><span class="toc-number">9.3.</span> <span class="toc-text">8.3 品牌机器启动键对照</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E5%90%84%E5%93%81%E7%89%8C%E7%9A%84%E4%B8%A4%E4%B8%AA%E5%B0%8F%E5%B7%AE%E5%BC%82"><span class="toc-number">9.4.</span> <span class="toc-text">8.4 各品牌的两个小差异</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E6%A3%80%E6%9F%A5%E6%B8%85%E5%8D%95"><span class="toc-number">10.</span> <span class="toc-text">9. 检查清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-FAQ"><span class="toc-number">11.</span> <span class="toc-text">10. FAQ</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">12.</span> <span class="toc-text">11. 写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/10/16/expand-ubuntu-root-partition/" title="💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）"><img src="/img/posts/expand-ubuntu-root-partition/cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）"/></a><div class="content"><a class="title" href="/2026/10/16/expand-ubuntu-root-partition/" title="💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）">💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）</a><time datetime="2026-10-16T10:00:00.000Z" title="发表于 2026-10-16 18:00:00">2026-10-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/09/china-folded-modernity/" title="中国的折叠：顶层全屋智能，一楼煤球炉"><img src="/img/china-folded-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="中国的折叠：顶层全屋智能，一楼煤球炉"/></a><div class="content"><a class="title" href="/2026/10/09/china-folded-modernity/" title="中国的折叠：顶层全屋智能，一楼煤球炉">中国的折叠：顶层全屋智能，一楼煤球炉</a><time datetime="2026-10-09T06:00:00.000Z" title="发表于 2026-10-09 14:00:00">2026-10-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/06/ros2-voice-remote-tool/" title="🔧 封装黑盒系统：我为酒店机器人大脑写了一个「遥控器」——ROS 2 语音交互一键启动工具的设计与踩坑实录"><img src="/img/posts/ros2-voice-remote-tool/cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="🔧 封装黑盒系统：我为酒店机器人大脑写了一个「遥控器」——ROS 2 语音交互一键启动工具的设计与踩坑实录"/></a><div class="content"><a class="title" href="/2026/10/06/ros2-voice-remote-tool/" title="🔧 封装黑盒系统：我为酒店机器人大脑写了一个「遥控器」——ROS 2 语音交互一键启动工具的设计与踩坑实录">🔧 封装黑盒系统：我为酒店机器人大脑写了一个「遥控器」——ROS 2 语音交互一键启动工具的设计与踩坑实录</a><time datetime="2026-10-06T02:00:00.000Z" title="发表于 2026-10-06 10:00:00">2026-10-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/01/edge-intelligence-llm-vs-slm/" title="🚀 边缘智能的崛起：大模型(LLM)与小模型(SLM)的核心差异与硬核落地指南"><img src="https://image.pollinations.ai/prompt/futuristic%20AI%20brain%20cloud%20computing%20neural%20network%20blue%20glow?width=1280&amp;height=720&amp;seed=400" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="🚀 边缘智能的崛起：大模型(LLM)与小模型(SLM)的核心差异与硬核落地指南"/></a><div class="content"><a class="title" href="/2026/10/01/edge-intelligence-llm-vs-slm/" title="🚀 边缘智能的崛起：大模型(LLM)与小模型(SLM)的核心差异与硬核落地指南">🚀 边缘智能的崛起：大模型(LLM)与小模型(SLM)的核心差异与硬核落地指南</a><time datetime="2026-10-01T02:00:00.000Z" title="发表于 2026-10-01 10:00:00">2026-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/09/22/jev-decision-model/" title="AI 圈爆火的 Jev：为什么“不会聊天”的 AI 才是程序员的真爱？"><img src="/img/jev-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AI 圈爆火的 Jev：为什么“不会聊天”的 AI 才是程序员的真爱？"/></a><div class="content"><a class="title" href="/2026/09/22/jev-decision-model/" title="AI 圈爆火的 Jev：为什么“不会聊天”的 AI 才是程序员的真爱？">AI 圈爆火的 Jev：为什么“不会聊天”的 AI 才是程序员的真爱？</a><time datetime="2026-09-22T13:00:00.000Z" title="发表于 2026-09-22 21:00:00">2026-09-22</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By KingDream</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 5.4.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.1.260810</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'github-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'kingdream-cn/kingdream-cn.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/ros-particles.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
