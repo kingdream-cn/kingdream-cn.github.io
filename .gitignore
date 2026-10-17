@@ -27,3 +27,28 @@ Thumbs.db
 # Hexo cache
 .json_content
 .json_renderer
+
+# ===== 本地留存文档：禁止上传至 GitHub =====
+# 分析 / 评估 / 规范 / 复盘等本地文档一律不进入版本库。
+# 仓库根目录仅保留 README.md，其余 Markdown 一律忽略
+/*.md
+!/README.md
+
+# 文件名含以下关键词的 Markdown（任意目录），视为本地文档
+*分析*.md
+*评估*.md
+*规范*.md
+*复盘*.md
+*报告*.md
+*草稿*.md
+*draft*.md
+*_local*.md
+*_private*.md
+
+# Hexo 草稿目录（render_drafts: false，不应上传）
+source/_drafts/
+
+# 本地私有 / 笔记目录
+_private/
+_local/
+_notes/
