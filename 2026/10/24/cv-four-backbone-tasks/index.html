@@ -1,0 +1,710 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>计算机视觉里，看懂一张图其实要会四件事 | KingDream's Blog</title><meta name="author" content="KingDream"><meta name="copyright" content="KingDream"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="把计算机视觉最核心的四类骨干任务（分类、检测、分割、重构）用大白话讲清，附 3 个可动手的交互演示，帮你在业务里快速判断该用哪种。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机视觉里，看懂一张图其实要会四件事">
+<meta property="og:url" content="https://kingdream-cn.github.io/2026/10/24/cv-four-backbone-tasks/index.html">
+<meta property="og:site_name" content="KingDream&#39;s Blog">
+<meta property="og:description" content="把计算机视觉最核心的四类骨干任务（分类、检测、分割、重构）用大白话讲清，附 3 个可动手的交互演示，帮你在业务里快速判断该用哪种。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kingdream-cn.github.io/img/cv-four-backbone-tasks-cover.jpg">
+<meta property="article:published_time" content="2026-10-24T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-24T02:00:00.000Z">
+<meta property="article:author" content="KingDream">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="图像分类">
+<meta property="article:tag" content="目标检测">
+<meta property="article:tag" content="图像分割">
+<meta property="article:tag" content="图像重构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kingdream-cn.github.io/img/cv-four-backbone-tasks-cover.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "计算机视觉里，看懂一张图其实要会四件事",
+  "url": "https://kingdream-cn.github.io/2026/10/24/cv-four-backbone-tasks/",
+  "image": "https://kingdream-cn.github.io/img/cv-four-backbone-tasks-cover.jpg",
+  "datePublished": "2026-10-24T02:00:00.000Z",
+  "dateModified": "2026-10-24T02:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "KingDream",
+      "url": "https://kingdream-cn.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/kingdream-cn/kingdream-cn.github.io@main/img/favicon.png"><link rel="canonical" href="https://kingdream-cn.github.io/2026/10/24/cv-four-backbone-tasks/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '计算机视觉里，看懂一张图其实要会四件事',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet"><style>
+  /* 全局衬线字体 */
+  body {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'Georgia', 'Times New Roman', '宋体', serif;
+  }
+
+  /* 标题加粗，增强层级 */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+  }
+
+  /* 站点标题使用衬线字体 */
+  #site-title,
+  #site-subtitle,
+  .site-name,
+  #aside-content .author-info-name,
+  #aside-content .author-info-description {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Georgia', 'Times New Roman', '宋体', serif;
+  }
+
+  /* 导航菜单 */
+  #nav .menus_items .menus_item .site-page {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Georgia', 'Times New Roman', '宋体', serif;
+  }
+
+  /* 移除首页头部蓝色背景，使用粒子背景 */
+  #page-header.full_page {
+    background: transparent !important;
+  }
+  /* 确保标题文字在粒子背景上清晰可见 */
+  #page-header #site-title {
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  #page-header #site-subtitle {
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  /* 粒子画层级调整，确保在文字下方 */
+  #ros-particle-canvas {
+    z-index: 0 !important;
+  }
+  #body-wrap {
+    position: relative;
+    z-index: 1;
+  }
+</style>
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="KingDream's Blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://cdn.jsdelivr.net/gh/kingdream-cn/kingdream-cn.github.io@main/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">35</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tech/"><i class="fa-fw fas fa-code"></i><span> 技术</span></a></div><div class="menus_item"><a class="site-page" href="/life/"><i class="fa-fw fas fa-mug-hot"></i><span> 生活</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/cv-four-backbone-tasks-cover.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">KingDream's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">计算机视觉里，看懂一张图其实要会四件事</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tech/"><i class="fa-fw fas fa-code"></i><span> 技术</span></a></div><div class="menus_item"><a class="site-page" href="/life/"><i class="fa-fw fas fa-mug-hot"></i><span> 生活</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">计算机视觉里，看懂一张图其实要会四件事</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-24T02:00:00.000Z" title="发表于 2026-10-24 10:00:00">2026-10-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-24T02:00:00.000Z" title="更新于 2026-10-24 10:00:00">2026-10-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4698</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>20 分钟</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="从一个再普通不过的场景说起"><a href="#从一个再普通不过的场景说起" class="headerlink" title="从一个再普通不过的场景说起"></a>从一个再普通不过的场景说起</h2><p>你掏出手机，扫一下付款码；相册自动把照片按”人脸”分好了组；一键修图把逆光的脸提亮；导航里，车前面的行人和路障被实时圈了出来。</p>
+<p>这几秒钟里，其实塞进了好几件完全不同的事。可我们总习惯用一个模糊的词把它们打批发——“图像识别”。</p>
+<p>真要拆开看，它们各自回答的是不同的问题：</p>
+<ul>
+<li>扫付款码，回答的是”<strong>这张图是不是二维码</strong>“；</li>
+<li>相册分组，回答的是”<strong>图里有没有人、人在哪</strong>“；</li>
+<li>智能修图，回答的是”<strong>哪个像素是脸、哪个像素是背景</strong>“；</li>
+<li>老照片修复，回答的是”<strong>能不能把这张残缺的图重新画好</strong>“。</li>
+</ul>
+<p>看出来了吗：同样是”看懂一张图”，要的答案粒度差着十万八千里。而计算机视觉里最核心的四大骨干任务，就是把这四类问题分别抽象出来的结果：</p>
+<p><strong>图像分类、目标检测、分割、图像重构。</strong></p>
+<blockquote>
+<p>先记住一个总纲：<strong>分类答”整张图是什么”，检测答”东西在哪、是什么”，分割答”每个像素属于谁”，重构答”把坏图修好或造张新图”。</strong></p>
+</blockquote>
+<p>后面的所有细节，都是围绕这四句话在转。</p>
+<h2 id="先搭个框架：你问的是”哪一层”的答案"><a href="#先搭个框架：你问的是”哪一层”的答案" class="headerlink" title="先搭个框架：你问的是”哪一层”的答案"></a>先搭个框架：你问的是”哪一层”的答案</h2><p>动手选方案之前，我习惯先问一句：<strong>这场仗，到底要拿到多细的答案？</strong></p>
+<p>这四类任务，如果用”答案粒度”从粗到细排一排，是这样：</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>输入</th>
+<th>输出</th>
+<th>粒度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>图像分类</td>
+<td>一张图</td>
+<td>一个类别（如”猫”）</td>
+<td>整图</td>
+</tr>
+<tr>
+<td>目标检测</td>
+<td>一张图</td>
+<td>若干个框 + 类别 + 置信度</td>
+<td>物体级</td>
+</tr>
+<tr>
+<td>分割</td>
+<td>一张图</td>
+<td>每个像素的类别</td>
+<td>像素级</td>
+</tr>
+<tr>
+<td>图像重构</td>
+<td>坏图 &#x2F; 低质图</td>
+<td>一张修好 &#x2F; 新生成的图</td>
+<td>输出还是图</td>
+</tr>
+</tbody></table>
+<p>这一栏”粒度”，是整篇文章的锚点。往下你会发现，很多看起来不一样的活儿，本质是同一类任务；很多看起来很像的词，答案粒度其实完全不同。</p>
+<h2 id="任务一：图像分类-——-“这是什么”"><a href="#任务一：图像分类-——-“这是什么”" class="headerlink" title="任务一：图像分类 —— “这是什么”"></a>任务一：图像分类 —— “这是什么”</h2><p>这是最朴素、也最基础的一类：给一张图，模型吐一个类别标签，比如”猫””狗””路牌””肺炎 CT 阳性”。</p>
+<p>它的特点就一句话：<strong>只见森林，不见树木。</strong> 模型不管图里有几个东西、它们待在哪，只对”整张图讲的是个啥”给出一个判断。所以哪怕图里猫和狗挤在一起，分类模型也只会看重那只最”显眼”的，给你一个笼统的答案。</p>
+<p>工程上它通常长这样：模型最后接一个 Softmax，输出一串概率，谁的分数最高就判成谁。身份证识别里的”这是正面还是反面”、垃圾图片过滤、遥感影像里”这块是农田还是城市”，都是分类。</p>
+<h3 id="动手看看分类长什么样"><a href="#动手看看分类长什么样" class="headerlink" title="动手看看分类长什么样"></a>动手看看分类长什么样</h3><p>下面这个演示把”图片”降维成三个几何图形。重点看一件事：分类器输出的是<strong>整张图属于某个类别的概率</strong>，而不是在图上找东西。</p>
+
+<style>
+.cv-demo{margin:1.6em 0;padding:18px 16px;border-radius:12px;border:1px solid #2f3340;background:#181a21;color:#e6e9ef;font-size:14px;line-height:1.6;overflow:hidden}
+.cv-demo .t{font-weight:600;font-size:15px;margin-bottom:2px}
+.cv-demo .s{color:#9aa3b2;font-size:12.5px;margin-bottom:14px}
+.cv-demo button{font-family:inherit;cursor:pointer}
+.cv-shapes{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.cv-shape{width:64px;height:64px;border-radius:12px;border:1px solid #33374a;background:#20232d;display:flex;align-items:center;justify-content:center}
+.cv-shape.on{border-color:#4f8cff;background:#262c3b}
+.cv-row{margin-bottom:10px}
+.cv-row:last-child{margin-bottom:0}
+.cv-row-h{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.cv-row-name{color:#c9d1d9}
+.cv-row-pct{color:#9aa3b2}
+.cv-bar{height:8px;border-radius:6px;background:#262a36;overflow:hidden}
+.cv-bar div{height:100%;border-radius:6px;transition:width .3s ease}
+@media (prefers-color-scheme: light){
+.cv-demo{background:#f6f7f9;border-color:#e2e5ea;color:#23272f}
+.cv-demo .s{color:#6b7280}
+.cv-shape{background:#fff;border-color:#e2e5ea}
+.cv-shape.on{background:#eef3ff}
+.cv-row-name{color:#3a3f4a}
+.cv-bar{background:#eceef2}
+}
+</style>
+<div class="cv-demo" id="cv-cls">
+<div class="t">分类演示：三个图形，各代表一张"图"</div>
+<div class="s">点一下任意图形，看看分类器给出的概率分布（这里把置信度固定，方便对比，非真实模型推理）。</div>
+<div class="cv-shapes">
+<button class="cv-shape on" data-k="round"><svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="11" fill="#ff7b72"/></svg></button>
+<button class="cv-shape" data-k="square"><svg width="30" height="30" viewBox="0 0 30 30"><rect x="5" y="5" width="20" height="20" rx="2" fill="#5a9cff"/></svg></button>
+<button class="cv-shape" data-k="tri"><svg width="30" height="30" viewBox="0 0 30 30"><polygon points="15,4 28,25 2,25" fill="#57c88f"/></svg></button>
+</div>
+<div class="cv-cls-out"></div>
+</div>
+<script>
+(function () {
+  var root = document.getElementById('cv-cls');
+  if (!root) return;
+  var btns = root.querySelectorAll('.cv-shape');
+  var out = root.querySelector('.cv-cls-out');
+  var map = {
+    round: [['圆形', 93], ['方形', 4], ['三角形', 3]],
+    square: [['圆形', 3], ['方形', 94], ['三角形', 3]],
+    tri: [['圆形', 5], ['方形', 2], ['三角形', 93]]
+  };
+  function bar(name, pct) {
+    var top = pct >= 90;
+    var color = top ? '#46c48e' : '#4f8cff';
+    var pc = top ? '#46c48e' : '#9aa3b2';
+    var fw = top ? '600' : '400';
+    return '<div class="cv-row"><div class="cv-row-h"><span class="cv-row-name">' + name + '</span><span class="cv-row-pct" style="color:' + pc + ';font-weight:' + fw + '">' + pct + '%</span></div><div class="cv-bar"><div style="width:' + pct + '%;background:' + color + '"></div></div></div>';
+  }
+  function render(k) {
+    var rows = map[k], html = '';
+    for (var i = 0; i < rows.length; i++) html += bar(rows[i][0], rows[i][1]);
+    out.innerHTML = html;
+    for (var j = 0; j < btns.length; j++) {
+      var on = btns[j].getAttribute('data-k') === k;
+      btns[j].className = 'cv-shape' + (on ? ' on' : '');
+    }
+  }
+  for (var n = 0; n < btns.length; n++) {
+    btns[n].addEventListener('click', function () { render(this.getAttribute('data-k')); });
+  }
+  render('round');
+})();
+</script>
+
+
+<blockquote>
+<p>分类的”坑”也最明显：<strong>它对位置和数量完全不敏感</strong>。一张图里有两只猫还是一只猫，它可能都答”猫”。所以凡是需要”数数”或”定位”的活儿，光靠分类不够。</p>
+</blockquote>
+<h2 id="任务二：目标检测-——-“在哪，是什么”"><a href="#任务二：目标检测-——-“在哪，是什么”" class="headerlink" title="任务二：目标检测 —— “在哪，是什么”"></a>任务二：目标检测 —— “在哪，是什么”</h2><p>分类只回答”有什么”，但很多场景你必须知道”<strong>东西具体在哪</strong>“。这时候就轮到目标检测了。</p>
+<p>检测干的事，是在图上同时做两件：<strong>先圈出每个感兴趣的东西（定位），再判断它是啥（分类）</strong>。所以它的输出是一串<strong>检测框</strong>，每个框都带着类别和置信度——这就是为什么你在 YOLO 的演示图里能看到一个个带文字的彩色框。</p>
+<p>它俩的关系可以这么记：<strong>分类是检测的子集</strong>。检测 ≈ “在整张图上跑了无数次分类”，只不过多了一步”这个位置有没有东西、有多大”。</p>
+<h3 id="动手看看”框”是怎么来的"><a href="#动手看看”框”是怎么来的" class="headerlink" title="动手看看”框”是怎么来的"></a>动手看看”框”是怎么来的</h3><p>下面这张”图”里放了三个几何物体（这里把它们叫作”球、锥、箱”）。模型会先找到东西在哪、再判断它是什么。</p>
+
+<style>
+.cv-demo{margin:1.6em 0;padding:18px 16px;border-radius:12px;border:1px solid #2f3340;background:#181a21;color:#e6e9ef;font-size:14px;line-height:1.6;overflow:hidden}
+.cv-demo .t{font-weight:600;font-size:15px;margin-bottom:2px}
+.cv-demo .s{color:#9aa3b2;font-size:12.5px;margin-bottom:14px}
+.cv-demo button{font-family:inherit;cursor:pointer}
+.cv-run{padding:7px 16px;border:none;border-radius:8px;background:#4f8cff;color:#fff;font-size:13px}
+.cv-note{color:#9aa3b2;font-size:12.5px}
+@media (prefers-color-scheme: light){
+.cv-demo{background:#f6f7f9;border-color:#e2e5ea;color:#23272f}
+.cv-demo .s{color:#6b7280}
+.cv-note{color:#6b7280}
+}
+</style>
+<div class="cv-demo" id="cv-det">
+<div class="t">检测演示：三个物体，先定位再分类</div>
+<div class="s">点"运行检测"，逐个物体被框住并标上类别与置信度（演示用，非真实模型）。</div>
+<canvas id="cv-det-c" width="340" height="200" style="max-width:100%;height:auto;border-radius:10px;display:block;background:#14161c"></canvas>
+<div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+<button class="cv-run" id="cv-det-run">运行检测 →</button>
+<span class="cv-note" id="cv-det-info">点按钮开始</span>
+</div>
+</div>
+<script>
+(function () {
+  var c = document.getElementById('cv-det-c');
+  if (!c) return;
+  var btn = document.getElementById('cv-det-run');
+  var info = document.getElementById('cv-det-info');
+  var W = 340, H = 200;
+  var dpr = window.devicePixelRatio || 1;
+  c.width = W * dpr; c.height = H * dpr;
+  var ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var objs = [
+    { kind: 'circle', cx: 90, cy: 70, r: 26, bx: 64, by: 44, bw: 52, bh: 52, color: '#ff7b72', label: '球', conf: '0.92' },
+    { kind: 'tri', cx: 148, cy: 148, s: 46, bx: 120, by: 122, bw: 56, bh: 52, color: '#57c88f', label: '锥', conf: '0.88' },
+    { kind: 'rect', x: 215, y: 108, w: 50, h: 50, bx: 215, by: 108, bw: 50, bh: 50, color: '#5a9cff', label: '箱', conf: '0.96' }
+  ];
+  function bg() {
+    ctx.fillStyle = '#14161c';
+    ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = '#232733';
+    ctx.lineWidth = 1;
+    for (var x = 0; x < W; x += 20) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (var y = 0; y < H; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  }
+  function drawObj(o) {
+    ctx.fillStyle = o.color;
+    if (o.kind === 'circle') { ctx.beginPath(); ctx.arc(o.cx, o.cy, o.r, 0, Math.PI * 2); ctx.fill(); }
+    else if (o.kind === 'rect') { ctx.fillRect(o.x, o.y, o.w, o.h); }
+    else { ctx.beginPath(); ctx.moveTo(o.cx, o.cy - o.s * 0.55); ctx.lineTo(o.cx + o.s * 0.6, o.cy + o.s * 0.45); ctx.lineTo(o.cx - o.s * 0.6, o.cy + o.s * 0.45); ctx.closePath(); ctx.fill(); }
+  }
+  function box(o) {
+    ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 2;
+    ctx.strokeRect(o.bx, o.by, o.bw, o.bh);
+    var lab = o.label + ' ' + o.conf;
+    ctx.font = '12px system-ui,sans-serif';
+    var tw = ctx.measureText(lab).width;
+    ctx.fillStyle = '#ffd166'; ctx.fillRect(o.bx, o.by - 18, tw + 10, 16);
+    ctx.fillStyle = '#14161c'; ctx.fillText(lab, o.bx + 5, o.by - 6);
+  }
+  function all(i) {
+    bg();
+    for (var j = 0; j < objs.length; j++) { drawObj(objs[j]); if (j <= i) box(objs[j]); }
+  }
+  all(-1);
+  var timer = null;
+  btn.addEventListener('click', function () {
+    if (timer) return;
+    all(-1);
+    info.textContent = '正在检测……';
+    var i = 0;
+    timer = setInterval(function () {
+      all(i);
+      i++;
+      if (i >= objs.length) {
+        clearInterval(timer); timer = null;
+        info.textContent = '共找到 ' + objs.length + ' 个物体';
+      }
+    }, 360);
+  });
+})();
+</script>
+
+
+<p>自动驾驶里圈出行人和车辆、工业质检里圈出瑕疵、安防监控里圈出可疑目标——这些都是检测。绝大多数要”画框”的活儿，都归它。</p>
+<h2 id="任务三：分割-——-“每个像素属于谁”"><a href="#任务三：分割-——-“每个像素属于谁”" class="headerlink" title="任务三：分割 —— “每个像素属于谁”"></a>任务三：分割 —— “每个像素属于谁”</h2><p>到这里，答案粒度一下子细到了像素。</p>
+<p>检测给的是”框”——框是方的，但真实物体的形状几乎不可能是方的。一只摊开的手、一条弯弯的道路，框都会把旁边无关的背景一起兜进去。分割就是来解决这个的：<strong>它要给图里的每一个像素，都标上”你属于谁”。</strong></p>
+<p>分割又分两大家族，这是最容易混的一对：</p>
+<ul>
+<li><strong>语义分割（Semantic Segmentation）</strong>：只分”类”，不分”个体”。所有”行人”的像素涂同一种色，所有”汽车”涂另一种色。它告诉你”这一片是人、那一片是车”，但<strong>不告诉你”这是第几个人”</strong>。</li>
+<li><strong>实例分割（Instance Segmentation）</strong>：既分”类”，又分”个体”。同样是行人，站左边的和站右边的会被当成两个独立对象，涂成不同深浅。它相当于<strong>在语义分割的基础上，再叠加了目标检测的”逐个”能力</strong>。</li>
+</ul>
+<p>一句话区分：<strong>语义分割数的是”有哪几类东西”，实例分割数的是”有几个东西”。</strong></p>
+<h3 id="动手看看两种分割的差别"><a href="#动手看看两种分割的差别" class="headerlink" title="动手看看两种分割的差别"></a>动手看看两种分割的差别</h3><p>场景里有【两个行人（红圆）】和【两辆汽车（蓝方）】。切换下面的三种模式，重点看两个同类物体是不是被”分了家”。（分割模式会换成伪彩色，颜色会和原图不同，别慌——它只是用来区分类别和个体。）</p>
+
+<style>
+.cv-demo{margin:1.6em 0;padding:18px 16px;border-radius:12px;border:1px solid #2f3340;background:#181a21;color:#e6e9ef;font-size:14px;line-height:1.6;overflow:hidden}
+.cv-demo .t{font-weight:600;font-size:15px;margin-bottom:2px}
+.cv-demo .s{color:#9aa3b2;font-size:12.5px;margin-bottom:14px}
+.cv-demo button{font-family:inherit;cursor:pointer}
+.cv-seg-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.cv-btn{padding:7px 14px;border:1px solid #33374a;border-radius:8px;background:#20232d;color:#d6dae3;font-size:13px}
+.cv-tip{margin-top:10px;color:#9aa3b2;font-size:12.5px}
+@media (prefers-color-scheme: light){
+.cv-demo{background:#f6f7f9;border-color:#e2e5ea;color:#23272f}
+.cv-demo .s{color:#6b7280}
+.cv-btn{background:#fff;color:#23272f;border-color:#d8dbe0}
+.cv-tip{color:#6b7280}
+}
+</style>
+<div class="cv-demo" id="cv-seg">
+<div class="t">分割演示：语义 vs 实例，一眼看出差别</div>
+<div class="s">两个行人（红圆）＋ 两辆汽车（蓝方）。切换模式，观察同类物体是否被区分开来。</div>
+<canvas id="cv-seg-c" width="340" height="200" style="max-width:100%;height:auto;border-radius:10px;display:block"></canvas>
+<div class="cv-seg-bar">
+<button class="cv-btn" data-m="orig" id="cv-seg-orig">原图</button>
+<button class="cv-btn" data-m="sem" id="cv-seg-sem">语义分割</button>
+<button class="cv-btn" data-m="inst" id="cv-seg-inst">实例分割</button>
+</div>
+<div class="cv-tip" id="cv-seg-tip">原图：两个行人（红）＋ 两辆汽车（蓝）。</div>
+</div>
+<script>
+(function () {
+  var c = document.getElementById('cv-seg-c');
+  if (!c) return;
+  var W = 340, H = 200;
+  var dpr = window.devicePixelRatio || 1;
+  c.width = W * dpr; c.height = H * dpr;
+  var ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var persons = [ { cx: 80, cy: 80, r: 28 }, { cx: 235, cy: 62, r: 22 } ];
+  var cars = [ { x: 125, y: 118, w: 44, h: 44 }, { x: 250, y: 132, w: 40, h: 40 } ];
+  var btns = [document.getElementById('cv-seg-orig'), document.getElementById('cv-seg-sem'), document.getElementById('cv-seg-inst')];
+  var tip = document.getElementById('cv-seg-tip');
+  var tips = {
+    orig: '原图：两个行人（红）＋ 两辆汽车（蓝），还没做任何分割。',
+    sem: '语义分割：同类物体涂成【同一种颜色】——两个行人都是橙、两辆车都是青，【不区分个体】。',
+    inst: '实例分割：同类物体也【逐个分开】——两个行人用深浅不同的橙，两辆车用深浅不同的蓝。'
+  };
+  function draw(m) {
+    var grid = m === 'orig';
+    ctx.fillStyle = grid ? '#14161c' : '#1d2029';
+    ctx.fillRect(0, 0, W, H);
+    if (grid) {
+      ctx.strokeStyle = '#232733'; ctx.lineWidth = 1;
+      for (var x = 0; x < W; x += 20) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      for (var y = 0; y < H; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    }
+    var p0, p1, c0, c1;
+    if (m === 'orig') { p0 = p1 = '#ff7b72'; c0 = c1 = '#5a9cff'; }
+    else if (m === 'sem') { p0 = p1 = '#ff9f43'; c0 = c1 = '#4dabf7'; }
+    else { p0 = '#ffb96b'; p1 = '#e07b1a'; c0 = '#8ecbff'; c1 = '#2f7fd6'; }
+    ctx.fillStyle = p0; ctx.beginPath(); ctx.arc(persons[0].cx, persons[0].cy, persons[0].r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = p1; ctx.beginPath(); ctx.arc(persons[1].cx, persons[1].cy, persons[1].r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = c0; ctx.fillRect(cars[0].x, cars[0].y, cars[0].w, cars[0].h);
+    ctx.fillStyle = c1; ctx.fillRect(cars[1].x, cars[1].y, cars[1].w, cars[1].h);
+  }
+  function setActive(m) {
+    for (var i = 0; i < btns.length; i++) {
+      var on = btns[i].getAttribute('data-m') === m;
+      btns[i].style.borderColor = on ? '#4f8cff' : '#33374a';
+      btns[i].style.background = on ? '#262c3b' : '#20232d';
+      btns[i].style.color = '#d6dae3';
+    }
+  }
+  for (var n = 0; n < btns.length; n++) {
+    btns[n].addEventListener('click', function () {
+      var m = this.getAttribute('data-m');
+      draw(m);
+      setActive(m);
+      tip.textContent = tips[m];
+    });
+  }
+  draw('orig');
+  setActive('orig');
+})();
+</script>
+
+
+<p>语义分割用在自动驾驶的路面 &#x2F; 车道线 &#x2F; 天空分析、遥感地物分类；实例分割则用在需要”数清楚有几个”的场景，比如细胞计数、货架商品逐个定位。</p>
+<h2 id="任务四：图像重构-——-“把图修好，或直接造一张”"><a href="#任务四：图像重构-——-“把图修好，或直接造一张”" class="headerlink" title="任务四：图像重构 —— “把图修好，或直接造一张”"></a>任务四：图像重构 —— “把图修好，或直接造一张”</h2><p>前三类任务，输入是图、输出是<strong>标签</strong>（类别 &#x2F; 框 &#x2F; 像素标签）。重构不一样：<strong>它输入的是一张不完整的、低质的图，输出的还是一张图</strong>，只不过这张图比原来更清晰、更完整，甚至是全新的一张。</p>
+<p>它涵盖的范围比名字听起来宽。粗分两条线：</p>
+<ul>
+<li><strong>补全修复</strong>：超分辨率（把糊图放大变清）、去噪、去模糊、老照片上色、图像修复（inpainting，把图里的水印 &#x2F; 杂物抹掉再填上合理内容）。</li>
+<li><strong>从无到有</strong>：文生图、图生图、风格迁移。给一句”一只戴着宇航头盔的猫”，模型从噪声里一步步”画”出一张图。</li>
+</ul>
+<p>这几年大火的各种生成式模型（扩散模型、GAN），干的本质都是重构这条线。它和前三个任务最大的区别是：<strong>前三个是”理解”图，重构是”制造”图。</strong> 一个是读数，一个是作画。</p>
+<p>所以如果你的需求是”让图变清楚”或”生成一张图”，就别往检测 &#x2F; 分割上使劲了，那是重构的地盘。</p>
+<h2 id="常见应用，怎么对上号"><a href="#常见应用，怎么对上号" class="headerlink" title="常见应用，怎么对上号"></a>常见应用，怎么对上号</h2><p>很多人上来就背”YOLO 做检测、U-Net 做分割”，背完还是不知道怎么用。其实把应用往前述四个任务上一套，关系就清楚了：</p>
+<table>
+<thead>
+<tr>
+<th>实际应用</th>
+<th>背后主要是哪种骨干任务</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>手机相册按人脸 &#x2F; 场景分组</td>
+<td>目标检测 + 图像分类</td>
+<td>先框出人脸，再判断是谁</td>
+</tr>
+<tr>
+<td>身份证 &#x2F; 证件 OCR 前的版面判断</td>
+<td>图像分类</td>
+<td>判断正反面、证件类型</td>
+</tr>
+<tr>
+<td>自动驾驶感知道路</td>
+<td>分割 + 检测 + 分类</td>
+<td>框车辆、分车道、认路牌</td>
+</tr>
+<tr>
+<td>医疗影像病灶勾画</td>
+<td>分割（常语义）</td>
+<td>要精确到像素找出病灶边界</td>
+</tr>
+<tr>
+<td>工业质检”有没有瑕疵”</td>
+<td>目标检测 &#x2F; 分割</td>
+<td>粗定位用检测，精边界用分割</td>
+</tr>
+<tr>
+<td>老照片修复 &#x2F; 上色</td>
+<td>图像重构</td>
+<td>从残缺图补全</td>
+</tr>
+<tr>
+<td>文生图 &#x2F; 风格迁移</td>
+<td>图像重构</td>
+<td>从文本 &#x2F; 参考图生成新图</td>
+</tr>
+<tr>
+<td>门禁刷脸”是不是你”</td>
+<td>检测 + 分类（识别）</td>
+<td>先定位人脸，再比对身份</td>
+</tr>
+</tbody></table>
+<p>注意上表里几乎<strong>没有一个真实产品是”只用一个任务”</strong>。它们大多是多个骨干任务的组合拳。这也是为什么必须先拆清楚四个任务——拆清楚了，你才知道一个复杂产品里，哪些部分该用哪种武器。</p>
+<h2 id="容易混的概念，掰开说"><a href="#容易混的概念，掰开说" class="headerlink" title="容易混的概念，掰开说"></a>容易混的概念，掰开说</h2><p>写代码前，先把这几个高频混淆点过一遍，能少走不少弯路：</p>
+<p><strong>1. 目标检测 vs 语义分割</strong></p>
+<p>共同点：都能告诉你”图里有什么”。区别在<strong>输出的形状</strong>——检测给”框”（方形、数量少、和物体形状无关），分割给”像素掩码”（贴合物体轮廓、逐像素）。要不要精确边界，是选型的分水岭。</p>
+<p><strong>2. 语义分割 vs 实例分割</strong></p>
+<p>前面演示里已经看得很清楚了：差在**”分不分个体”**。数人头的场景必须实例分割；只看”哪里是路、哪里是天”用语义分割就够，还更省。</p>
+<p><strong>3. 图像分类 vs 目标检测</strong></p>
+<p>分类是”整图一个标签”，检测是”每个物体一个框 + 标签”。判断标准特别简单：<strong>你的答案里需不需要”位置”？</strong> 不需要就是分类，需要就是检测。</p>
+<p><strong>4. 重构不是”识别”</strong></p>
+<p>很多人把超分、美颜也当成”图像识别”，其实它们根本不输出标签，输出的是图。任务性质（理解 vs 生成）都不同，选模型、选损失函数、选评测指标，全然两套体系。</p>
+<h2 id="业务里怎么选：先问三个问题"><a href="#业务里怎么选：先问三个问题" class="headerlink" title="业务里怎么选：先问三个问题"></a>业务里怎么选：先问三个问题</h2><p>真到落地，别再纠结”用哪个 SOTA 模型”，先拿这三个问题逼自己一把，任务类型多半就出来了：</p>
+<ol>
+<li><strong>我要的答案，是”标签”还是”图”？</strong> 要标签 → 前三类；要图 → 重构。</li>
+<li><strong>需不需要”位置 &#x2F; 数量”？</strong> 不需要 → 分类；需要但只圈范围 → 检测；要精确边界 → 分割。</li>
+<li><strong>要分清”每个个体”吗？</strong> 不要 → 语义分割；要 → 实例分割。</li>
+</ol>
+<p>走完这三个问题，答案基本就锁定在某一个任务上了。剩下的所谓”模型选型、数据标注、调参”，那都是选定任务之后的执行层细节。</p>
+<p>顺带一句经验：<strong>数据标注成本是会随任务变本加厉的</strong>。分类只要一张图一个标签，检测要每张图框一批框，分割要每张图逐像素抠轮廓。任务越”细”，标注越贵。所以能用分类解决的就别上检测，能用检测的别硬上分割——省下来的标注预算，往往比省一点模型精度更实在。</p>
+<hr>
+<p>以后我再遇到”要识别个什么东西”的需求，不会第一反应去搜”图像识别怎么做”了。我会先问自己三句：<strong>要标签还是图？要位置吗？要分清个体吗？</strong></p>
+<p>这三个问题问完，该上哪类任务基本就定了。剩下选网络、标数据、调参，都是敲定方向之后的执行活。</p>
+<p>写这篇，是因为我见过不少朋友把”图像识别”当成一个词，一接到需求就懵，不知道从哪下手。把这四件事拆开来看，是我自己绕了挺久才想明白的。希望你能少绕一点。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/">计算机视觉</a><a class="post-meta__tags" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a><a class="post-meta__tags" href="/tags/%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/">图像分类</a><a class="post-meta__tags" href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/">目标检测</a><a class="post-meta__tags" href="/tags/%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/">图像分割</a><a class="post-meta__tags" href="/tags/%E5%9B%BE%E5%83%8F%E9%87%8D%E6%9E%84/">图像重构</a></div><div class="post-share"><div class="social-share" data-image="/img/cv-four-backbone-tasks-cover.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/10/16/expand-ubuntu-root-partition/" title="💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）"><img class="cover" src="/img/posts/expand-ubuntu-root-partition/cover.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）</div></div><div class="info-2"><div class="info-item-1"> 机器：ASUS TUF Gaming A15（1TB NVMe · GPT · UEFI · Win11 + Ubuntu 24.04.5）结果：根分区 184.74 GiB → 292.97 GiB，不重装、不丢数据，从关机到扩容完重启进系统约 50 分钟适用：任何 Windows + Ubuntu 双系统（华硕 &#x2F; 拯救者 &#x2F; 联想 &#x2F; 戴尔 &#x2F; 惠普思路一致）  跑 ROS、深度学习、Docker 的同学大概都经历过这个：当初装 Ubuntu 只切了 200G，半年后 df -h / 就剩 20G 了，docker pull 都 pull 不动。 重装系统是最省事的答案，但代价是全部环境重配 —— 对做机器人的人来说，那是两三天。这篇文章记录的是另一条路：把 Windows 那边闲置的空间，”搬”进 Ubuntu 根分区。 但先说结论：这件事的难度，完全取决于你那块空闲空间在物理上的位置。 同样叫”扩容”，有的情况 3 分钟在线搞定，有的情况要搬 184G 数据、耗时 1 小时、中途断电大概率报废。所以本文的重点不是”怎么做”，而是...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/kingdream-cn/kingdream-cn.github.io@main/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">KingDream</div><div class="author-info-description">分享技术，记录成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">35</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kingdream-cn"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kingdream-cn" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2730970347@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客！这里记录我在机器人开发领域的学习日常、踩坑心得与技术沉淀，方向涵盖 ROS、ROS2、SLAM、运动规划、嵌入式及系统架构等。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E4%B8%80%E4%B8%AA%E5%86%8D%E6%99%AE%E9%80%9A%E4%B8%8D%E8%BF%87%E7%9A%84%E5%9C%BA%E6%99%AF%E8%AF%B4%E8%B5%B7"><span class="toc-number">1.</span> <span class="toc-text">从一个再普通不过的场景说起</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E6%90%AD%E4%B8%AA%E6%A1%86%E6%9E%B6%EF%BC%9A%E4%BD%A0%E9%97%AE%E7%9A%84%E6%98%AF%E2%80%9D%E5%93%AA%E4%B8%80%E5%B1%82%E2%80%9D%E7%9A%84%E7%AD%94%E6%A1%88"><span class="toc-number">2.</span> <span class="toc-text">先搭个框架：你问的是”哪一层”的答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E4%B8%80%EF%BC%9A%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB-%E2%80%94%E2%80%94-%E2%80%9C%E8%BF%99%E6%98%AF%E4%BB%80%E4%B9%88%E2%80%9D"><span class="toc-number">3.</span> <span class="toc-text">任务一：图像分类 —— “这是什么”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%89%8B%E7%9C%8B%E7%9C%8B%E5%88%86%E7%B1%BB%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7"><span class="toc-number">3.1.</span> <span class="toc-text">动手看看分类长什么样</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E4%BA%8C%EF%BC%9A%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-%E2%80%94%E2%80%94-%E2%80%9C%E5%9C%A8%E5%93%AA%EF%BC%8C%E6%98%AF%E4%BB%80%E4%B9%88%E2%80%9D"><span class="toc-number">4.</span> <span class="toc-text">任务二：目标检测 —— “在哪，是什么”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%89%8B%E7%9C%8B%E7%9C%8B%E2%80%9D%E6%A1%86%E2%80%9D%E6%98%AF%E6%80%8E%E4%B9%88%E6%9D%A5%E7%9A%84"><span class="toc-number">4.1.</span> <span class="toc-text">动手看看”框”是怎么来的</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E4%B8%89%EF%BC%9A%E5%88%86%E5%89%B2-%E2%80%94%E2%80%94-%E2%80%9C%E6%AF%8F%E4%B8%AA%E5%83%8F%E7%B4%A0%E5%B1%9E%E4%BA%8E%E8%B0%81%E2%80%9D"><span class="toc-number">5.</span> <span class="toc-text">任务三：分割 —— “每个像素属于谁”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%89%8B%E7%9C%8B%E7%9C%8B%E4%B8%A4%E7%A7%8D%E5%88%86%E5%89%B2%E7%9A%84%E5%B7%AE%E5%88%AB"><span class="toc-number">5.1.</span> <span class="toc-text">动手看看两种分割的差别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E5%9B%9B%EF%BC%9A%E5%9B%BE%E5%83%8F%E9%87%8D%E6%9E%84-%E2%80%94%E2%80%94-%E2%80%9C%E6%8A%8A%E5%9B%BE%E4%BF%AE%E5%A5%BD%EF%BC%8C%E6%88%96%E7%9B%B4%E6%8E%A5%E9%80%A0%E4%B8%80%E5%BC%A0%E2%80%9D"><span class="toc-number">6.</span> <span class="toc-text">任务四：图像重构 —— “把图修好，或直接造一张”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E5%BA%94%E7%94%A8%EF%BC%8C%E6%80%8E%E4%B9%88%E5%AF%B9%E4%B8%8A%E5%8F%B7"><span class="toc-number">7.</span> <span class="toc-text">常见应用，怎么对上号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%B9%E6%98%93%E6%B7%B7%E7%9A%84%E6%A6%82%E5%BF%B5%EF%BC%8C%E6%8E%B0%E5%BC%80%E8%AF%B4"><span class="toc-number">8.</span> <span class="toc-text">容易混的概念，掰开说</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%9A%E5%8A%A1%E9%87%8C%E6%80%8E%E4%B9%88%E9%80%89%EF%BC%9A%E5%85%88%E9%97%AE%E4%B8%89%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="toc-number">9.</span> <span class="toc-text">业务里怎么选：先问三个问题</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/10/24/cv-four-backbone-tasks/" title="计算机视觉里，看懂一张图其实要会四件事"><img src="/img/cv-four-backbone-tasks-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="计算机视觉里，看懂一张图其实要会四件事"/></a><div class="content"><a class="title" href="/2026/10/24/cv-four-backbone-tasks/" title="计算机视觉里，看懂一张图其实要会四件事">计算机视觉里，看懂一张图其实要会四件事</a><time datetime="2026-10-24T02:00:00.000Z" title="发表于 2026-10-24 10:00:00">2026-10-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/16/expand-ubuntu-root-partition/" title="💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）"><img src="/img/posts/expand-ubuntu-root-partition/cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）"/></a><div class="content"><a class="title" href="/2026/10/16/expand-ubuntu-root-partition/" title="💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）">💽 不重装系统扩容 Ubuntu 根分区：200G → 293G 完整实战（Windows 双系统通用）</a><time datetime="2026-10-16T10:00:00.000Z" title="发表于 2026-10-16 18:00:00">2026-10-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/09/china-folded-modernity/" title="中国的折叠：顶层全屋智能，一楼煤球炉"><img src="/img/china-folded-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="中国的折叠：顶层全屋智能，一楼煤球炉"/></a><div class="content"><a class="title" href="/2026/10/09/china-folded-modernity/" title="中国的折叠：顶层全屋智能，一楼煤球炉">中国的折叠：顶层全屋智能，一楼煤球炉</a><time datetime="2026-10-09T06:00:00.000Z" title="发表于 2026-10-09 14:00:00">2026-10-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/06/ros2-voice-remote-tool/" title="🔧 封装黑盒系统：我为酒店机器人大脑写了一个「遥控器」——ROS 2 语音交互一键启动工具的设计与踩坑实录"><img src="/img/posts/ros2-voice-remote-tool/cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="🔧 封装黑盒系统：我为酒店机器人大脑写了一个「遥控器」——ROS 2 语音交互一键启动工具的设计与踩坑实录"/></a><div class="content"><a class="title" href="/2026/10/06/ros2-voice-remote-tool/" title="🔧 封装黑盒系统：我为酒店机器人大脑写了一个「遥控器」——ROS 2 语音交互一键启动工具的设计与踩坑实录">🔧 封装黑盒系统：我为酒店机器人大脑写了一个「遥控器」——ROS 2 语音交互一键启动工具的设计与踩坑实录</a><time datetime="2026-10-06T02:00:00.000Z" title="发表于 2026-10-06 10:00:00">2026-10-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/01/edge-intelligence-llm-vs-slm/" title="大模型还是小模型，机器人为什么更需要本地那个"><img src="https://image.pollinations.ai/prompt/futuristic%20AI%20brain%20cloud%20computing%20neural%20network%20blue%20glow?width=1280&amp;height=720&amp;seed=400" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="大模型还是小模型，机器人为什么更需要本地那个"/></a><div class="content"><a class="title" href="/2026/10/01/edge-intelligence-llm-vs-slm/" title="大模型还是小模型，机器人为什么更需要本地那个">大模型还是小模型，机器人为什么更需要本地那个</a><time datetime="2026-10-01T02:00:00.000Z" title="发表于 2026-10-01 10:00:00">2026-10-01</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By KingDream</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 5.4.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.1.260810</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'github-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'kingdream-cn/kingdream-cn.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/ros-particles.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
