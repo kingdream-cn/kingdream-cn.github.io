@@ -11,7 +11,7 @@ categories:
   - 机器人开发
 description: '树莓派教会一代人写逻辑，Microduck 教的却是写奖励函数——一次心智模型的重置。'
 keywords: Microduck, 具身智能, 强化学习, 奖励函数, 机器人, 树莓派
-cover: 'https://image.pollinations.ai/prompt/tiny%20bipedal%20robot%20duck%20reinforcement%20learning%20neural%20network%20dark%20tech?width=1280&height=720&seed=20261031'
+cover: /img/posts/microduck-reward-function-programming/cover.png
 abbrlink: 61847
 date: 2026-10-31 10:00:00
 updated: 2026-10-31 10:00:00
