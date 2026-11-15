@@ -1,5 +1,5 @@
 ---
-title: '我给具身智能周刊搭了一条流水线：从 GitHub 投稿到 Skill 辅助编刊'
+title: '我给具身智能周刊写了个编刊工具'
 tags:
   - 具身智能
   - 自动化
@@ -14,7 +14,7 @@ keywords: 具身智能周刊, weekly-craft, Agent Skill, GitHub Actions, Python,
 cover: /img/posts/weekly-automation-skill/cover.png
 abbrlink: 75619
 date: 2026-11-15 17:30:43
-updated: 2026-11-15 17:30:43
+updated: 2026-11-15 17:43:15
 ---
 
 一期具身智能周刊发布出来，读者看到的是几组标题、摘要和链接。但在它变成网页之前，还要完成一串不太显眼的工作：收集投稿、检查重复、核对来源、归类、改摘要、统一格式，再更新网站入口。
