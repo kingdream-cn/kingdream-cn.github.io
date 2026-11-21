@@ -1,121 +1,123 @@
 ---
-title: 'MCP 2.x 把 FastMCP 改名了，我顺着这个坑把 LLM 到 Agent 捋顺了'
+title: '二十几行写个 MCP server'
 tags:
   - MCP
-  - LLM
-  - Agent
   - AI
+  - Agent
 categories:
   - 技术
-description: 从一个最小 MCP demo 说起，把 LLM、Token、Context、Prompt、Tool、MCP、Agent、Skill 这条链路串起来，讲清楚 MCP 为什么是连接 LLM 与工具世界的通用协议。
-keywords: MCP, LLM, Agent, Token, Prompt, Tool, Skill, function calling
+description: 用一个二十几行的 MCP server 讲清 MCP 的定位、Host/Client/Server 架构、tool/resource/prompt 三类能力，以及 stdio 和 HTTP 两种传输方式。
+keywords: MCP, Model Context Protocol, tool, resource, prompt, stdio, function calling
 cover: '/img/posts/mcp-llm-to-agent-skill/cover.jpg'
 abbrlink: 18734
 date: 2026-11-21 10:00:00
 updated: 2026-11-21 10:00:00
 ---
 
-我最近在折腾 Agent 相关的东西，卡在一个词上过不去：MCP。网上讲它的文章不少，但要么直接甩一张架构图，要么上来就是"客户端""服务器""协议"一堆术语，我越看越糊涂。后来干脆自己写了个最小 demo 跑了一遍，才把从 LLM 到 Agent 这条线串起来。这篇就是把我捋顺的过程记下来，省得以后忘了。
+前几天给一个 Agent 接内部接口，第一版写完还挺得意。结果换了个客户端跑，工具声明的方式完全不一样，我几乎把代码重抄了一遍。当时就想，这事儿不该有个统一接口吗。后来才知道有，就是 MCP。
 
-## 先说 LLM 到底是什么
+## MCP 是什么
 
-很多人把大模型想神了，觉得它什么都会。我一开始也这么想。后来读它的实现原理才明白，LLM 干的活其实特别朴素：预测下一个 token。
+MCP 全称 Model Context Protocol，模型上下文协议。Anthropic 在 2024 年底提出，之后社区和几家大厂陆续跟进。
 
-你给它一句"今天天气真"，它算出下一个最可能出现的词是"好"，于是补成"今天天气真好"。然后拿这整句继续预测下一个，一个词一个词往外吐。它没有意识，没有记忆，也不会思考，本质就是一个概率接龙机。
+名字听着玄，作用其实很窄：它规定了一套标准方式，让外部能力能被模型所在的程序发现、读取、调用。
 
-这个认知很重要。后面所有的事——Context、Prompt、Tool、Agent——都是从这个"只会接龙"的前提推出来的。
+我拿 USB-C 打比方。以前手机充电口五花八门，Micro-USB、Lightning、各家私有口，一根线配一个手机。现在统一成 USB-C，一根线插哪都行。MCP 干的是同一件事——提供能力的那一方按规范写一次，任何支持 MCP 的客户端都能接上。
 
-## Token、Context、Prompt，三个词把边界说清楚
+有一点要先划清楚：MCP 不负责让模型变聪明，也不参与推理。它只解决"能力怎么挂上去"这一件事。想清楚这点，后面就不容易乱。
 
-先说 Token。它是模型处理文本的最小单位。中文里一个 Token 大概是大半个字，英文里一个 Token 大概是小半个词。模型的计费、长度限制，全都按 Token 算。
+## 它和 function calling 不是一回事
 
-然后是 Context，上下文窗口。模型一次能"看见"的 Token 是有限的。比如窗口是 8k Token，那超过这个长度的内容，它就直接看不见了。这是硬约束，不是软限制。
+我最常被问的就是这句：OpenAI 早就有 function calling，为什么还要 MCP。
 
-Prompt 就好理解了：你塞给模型的那段话。在有限窗口里，你想办法用 Prompt 引导它给出你要的结果。
+我的理解是这样：function calling 解决的是"模型怎么表达我想调哪个函数"，是模型厂商内置的能力。MCP 解决的是"外部能力怎么接入、怎么发现、怎么调用"，是一个跨厂商的协议。
 
-这三个词放一起，结论就一句话：LLM 只会接龙，而且接龙时能看到的上下文还有长度上限。
+打个不太严谨的比方，function calling 像各家自己定的充电协议，MCP 像 USB-C 的物理接口标准。
 
-那问题来了——它只能"说"，不能"做"。你让它查今天的天气，它没有手，点不了网页，调不了接口，只能凭训练时的记忆瞎编一个温度出来。
+真正的差别在复用成本。function calling 的代码通常跟某个模型或某个 SDK 绑在一起，换一家就得改；MCP 的 server 写一次，任何支持 MCP 的客户端都能连。我那段被重抄的代码，就是这个成本的具体表现。
 
-## 会"说"还不够，得会"动手"
+## 三个角色：Host、Client、Server
 
-于是就有了 Tool（工具）这个概念。
+MCP 里的角色有三个，别被"客户端/服务器"这两个词吓到。
 
-思路是这样的：模型虽然不能直接执行代码，但它可以告诉你"我想调哪个工具、参数是什么"。你（或你的程序）拿到这个请求，替它去执行，再把结果塞回给它，让它接着生成。这一套，OpenAI 最早做成了标准能力，叫 function calling（函数调用）。
+Host 是你实际在用的那个程序，比如 Claude Desktop、某个 IDE 插件、你自己写的 Agent。Client 是 Host 内部负责通信的那部分，一个 Host 可以开多个 client，一个 client 对应一条 server 连接。Server 是提供能力的一方，可以是本地进程，也可以是远端服务。
 
-到这里，模型才第一次有了"动手"的能力。但它带来一个新麻烦——工具怎么接，每家都不一样。
+一次调用大概走这么几步：
 
-## 问题来了：每家的工具接口都不一样
+1. Host 启动时，client 连上 server，双方握手，交换各自支持的能力
+2. client 问 server：你有哪些工具、资源、提示词
+3. 模型结合用户的话，决定用哪个工具、传什么参数
+4. client 把调用请求发给 server
+5. server 执行完，把结果返回
+6. 结果进入模型上下文，模型接着生成回答
 
-我最早用 function calling 的时候，OpenAI 的写法是一套 JSON Schema。后来想换个模型试试，比如换成 Anthropic 的 Claude，结果发现工具的声明格式、返回格式全都不一样，得重写。
+第 3 步是关键：决定用哪个工具的是模型，真正执行的是 server。模型自己从不执行代码，它只产出"我要调这个"的意图。这一点跟 function calling 的机制是一致的，MCP 没改这个，改的是外面那一圈接口。
 
-这还没完。就算模型统一了，你写的工具是给一个 Python 脚本用的，还是给桌面应用用的，还是给另一个 Agent 用的，都得各写各的适配。一个工具写一遍，换一个地方就得再写一遍。
+## 三类能力：Tool、Resource、Prompt
 
-我当时就在想，这玩意儿就没有个统一标准吗？后来知道，有的，就是 MCP。
+这是 MCP 最核心的部分，也是我一开始最容易搞混的地方。协议定义了三种能力原语，各管一摊。
 
-## MCP，工具界的 USB-C
+**Tool 是模型主动调用的函数。** 它有名字、有参数、有描述，模型根据描述判断什么时候用。我 server 里放了两个：`add` 做加法，`get_weather` 查天气。这类能力通常带副作用，发邮件、查数据库、下单，都归它。用不用、什么时候用，模型说了算。
 
-MCP 全称 Model Context Protocol，模型上下文协议。名字挺唬人，但作用一句话就能说清：给"模型调工具"这件事定一个统一接口。
+**Resource 是可读取的数据，不是可执行的函数。** 它用 URI 标识，客户端按需读取。我写了一个 `config://app`，返回应用配置。配置文件、日志片段、文档、数据库 schema 都适合放这里。它不是给模型"调用"的，而是给客户端读进上下文用的。
 
-我用 USB-C 打比方。以前手机充电口五花八门，Micro-USB、Lightning、各家私有口，一根线一个手机。现在统一成 USB-C，一根线插哪都行。MCP 干的是类似的事：工具提供方只要按 MCP 的规范写一次，任何支持 MCP 的客户端都能连上用。
+**Prompt 是服务器预置的提示词模板，可以带参数。** 我写了个 `review_code`，传一段代码进去，它吐出一句完整的"请审查下面这段代码，指出潜在问题并给出修改建议……"。好处是把调好的提示词集中放在服务器上，所有客户端共用一份，不用各抄一遍。
 
-MCP 分两个角色：Server 和 Client。Server 负责提供工具，Client 负责连上 Server 去调工具，中间走一套标准协议通信。
+| | 谁触发 | 干什么 | 典型场景 |
+|---|---|---|---|
+| Tool | 模型 | 执行动作 | 查天气、发邮件、调接口 |
+| Resource | 客户端 | 读内容 | 配置文件、日志、文档 |
+| Prompt | 用户 | 套模板 | 代码审查、写作提纲 |
 
-## function calling 不是够用了吗，为什么还要 MCP
+我一开始老想把 Resource 当 Tool 用，设计得很别扭。后来按"这个动作要不要模型自己决定"来分，就清楚了。
 
-这是我被问得最多，也最该正面回答的问题。
+## 写个 server，三样都放进去
 
-function calling 是"模型内置的能力"，解决的是"让模型声明要调哪个工具"这件事，是模型厂商自家定义的一套东西。MCP 解决的是"工具和调用方之间怎么连接"这件事，是一个独立于任何模型厂商的协议。
-
-不严谨地打个比方：function calling 是"充电协议"，MCP 是"充电接口的物理标准"。前者各家自己定，后者是大家约定好的统一口。
-
-更实在的区别在于：用 function calling，你的工具跟某个具体模型绑死了，换模型要重写；用 MCP，工具写一次，换个模型、换个客户端都不用动。
-
-下面这个 demo 能把这个区别看得很清楚。
-
-## 写个最小 demo，看复用性
-
-我写了一个最小的 MCP Server，暴露两个工具：一个加法 `add`，一个查天气 `get_weather`。
+说了这么多，不如跑一遍。我用 Python 的 MCP SDK 写了个最小 server，二十几行：
 
 ```python
-"""最小 MCP server：暴露两个工具，供任意客户端复用。"""
 import logging
 
 from mcp.server.fastmcp import FastMCP
 
-# 关掉 server 端 INFO 日志，让演示输出干净
 logging.getLogger("mcp.server.lowlevel.server").setLevel(logging.WARNING)
 
 mcp = FastMCP("demo")
-
 
 @mcp.tool()
 def add(a: int, b: int) -> int:
     """两个整数相加。"""
     return a + b
 
-
 @mcp.tool()
 def get_weather(city: str) -> str:
     """查询某个城市的天气（演示用模拟数据）。"""
     return f"{city} 今天晴，26°C，空气质量优。"
 
+@mcp.resource("config://app")
+def get_config() -> str:
+    """返回应用配置。"""
+    return "app_name=demo\nversion=1.0\ntimeout=30"
 
-if __name__ == "__main__":
-    mcp.run(transport="stdio")
+@mcp.prompt()
+def review_code(code: str) -> str:
+    """生成一个代码审查的提示词。"""
+    return f"请审查下面这段代码，指出潜在问题并给出修改建议：\n\n{code}"
+
+mcp.run(transport="stdio")
 ```
 
-二十几行就完事了。核心是 `@mcp.tool()` 这个装饰器，把普通函数注册成 MCP 工具。
+核心就是三个装饰器：`@mcp.tool()`、`@mcp.resource()`、`@mcp.prompt()`，把普通函数注册成对应的能力。函数里的 docstring 也不是摆设，它会变成这个能力的描述，模型就是靠这句描述判断该不该用它。最上面那行 logging 是把 server 的 INFO 日志关掉，不关的话客户端输出里会混进一堆 "Processing request" 之类的日志。剩下的协议细节，SDK 全包了。
 
-然后是客户端。我写了两个完全独立的客户端，都去连上面这个 server：
+客户端这边，我写了两个完全独立的脚本，都去连上面这个 server。第一个把三类能力都走一遍：
 
 ```python
-"""客户端 A：独立进程，复用同一个 server 的 add 工具。"""
 import asyncio
 import sys
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from pydantic import AnyUrl
 
 
 async def main():
@@ -125,66 +127,76 @@ async def main():
         async with ClientSession(read, write) as session:
             await session.initialize()
 
+            # 1. Tool：列出并调用
             tools = await session.list_tools()
-            print("client_a 看到的工具:", [t.name for t in tools.tools])
-
+            print("工具:", [t.name for t in tools.tools])
             r = await session.call_tool("add", {"a": 3, "b": 4})
-            print("client_a 调用 add(3,4) =>", r.content[0].text)
+            print("调用 add(3,4) =>", r.content[0].text)
+
+            # 2. Resource：列出并读取
+            resources = await session.list_resources()
+            print("资源:", [str(x.uri) for x in resources.resources])
+            res = await session.read_resource(AnyUrl("config://app"))
+            print("读取 config://app =>", res.contents[0].text.replace("\n", " | "))
+
+            # 3. Prompt：列出并渲染
+            prompts = await session.list_prompts()
+            print("提示词:", [p.name for p in prompts.prompts])
+            p = await session.get_prompt("review_code", {"code": "print(1)"})
+            print("渲染 review_code =>", p.messages[0].content.text.replace("\n", " "))
 
 
 asyncio.run(main())
 ```
 
-另一个 `client_b` 跟它几乎一模一样，只是把调用的工具从 `add` 换成了 `get_weather`。
+第二个 `client_b` 跟它几乎一模一样，只是把调用的工具从 `add` 换成了 `get_weather`。
 
-跑一下，两个客户端各自的输出：
+跑一下，输出是这样：
 
 ```
-client_a 看到的工具: ['add', 'get_weather']
-client_a 调用 add(3,4) => 7
+工具: ['add', 'get_weather']
+调用 add(3,4) => 7
+资源: ['config://app']
+读取 config://app => app_name=demo | version=1.0 | timeout=30
+提示词: ['review_code']
+渲染 review_code => 请审查下面这段代码，指出潜在问题并给出修改建议：  print(1)
 ----
 client_b 看到的工具: ['add', 'get_weather']
 client_b 调用 get_weather(上海) => 上海 今天晴，26°C，空气质量优。
 ```
 
-注意看：两个客户端连的是同一个 server，各自看到了同样的工具列表，然后各取所需——一个调 `add`，一个调 `get_weather`，都成功了。
+两个客户端连的是同一个 server，看到的是同一份能力清单，然后各取所需。工具只写一次，谁来用都不用改——这就是我前面说的复用成本差异。
 
-这就是复用性。工具只写一次（在 server 里），谁来用都行，不用改。换成 function calling 的那套写法，换个模型或换个客户端，大概率要重来一遍。
+## 传输方式：stdio 和 HTTP
 
-## 说个我踩的坑
+MCP 本身不绑定传输层，目前主要两种。
 
-写到这，我把踩的两个坑交代一下，免得你跟着复现时卡住。
+**stdio**：客户端把 server 当子进程启动，通过标准输入输出通信。适合本地能力，比如读本地文件、跑本地命令、连本地数据库。我的 demo 用的就是这个，`command` 写的是解释器路径，`args` 是脚本名。
 
-第一个坑：我一开始直接 `pip install mcp`，装到的是 2.x。然后跑代码，`from mcp.server.fastmcp import FastMCP` 直接报 `ModuleNotFoundError`，提示说 FastMCP 在 2.x 里改名成了 MCPServer。我一开始没细看报错，还以为是环境问题，绕了一会儿，最后 `pip install "mcp<2"` 固定到 1.x 才跑通。
+**HTTP**：server 作为独立服务常驻，客户端通过网络连过去。适合远端服务、多人共用的能力。早期用的是 HTTP + SSE，后来规范改成了 Streamable HTTP，一个端点就能处理请求和流式响应。
 
-第二个坑：客户端里我一开始写 `command="python3"`，结果在虚拟环境里跑，子进程启动 server 时用的 `python3` 是系统的，没装 mcp，server 直接起不来。改成 `sys.executable`（当前解释器）才解决。
+怎么选不复杂：能力在本地、只有自己用，stdio 够了；能力要共享、要跨机器，上 HTTP。我这台机器上的 demo 如果改成 HTTP，server 就得单独起一个进程常驻，客户端那边换成 URL——工作量主要在部署，不在协议。
 
-都不是大问题，但记住这两点能省不少时间：装 `mcp<2`，客户端用 `sys.executable`。
+## 我踩的两个坑
 
-## 说句实话：MCP 还没统一
+第一个坑，`pip install mcp` 默认装到了 2.x，然后 `from mcp.server.fastmcp import FastMCP` 直接报 `ModuleNotFoundError`，提示说 FastMCP 在 2.x 里改名成了 MCPServer。我一开始没细看报错，还以为是虚拟环境没装好，绕了一会儿，最后 `pip install "mcp<2"` 固定到 1.x 才跑通。
 
-再泼盆冷水。MCP 现在并没有真的"统一"。OpenAI 有 function calling，Google 有 Gemini tools，Anthropic 在推 MCP，各家还是各玩各的。MCP 只是"正在被越来越多人接受"的标准，不是"已经一统天下"的既成事实。
+第二个坑，客户端里我一开始写 `command="python3"`，结果子进程启动 server 时用的是系统解释器，里面没装 mcp，server 直接起不来。改成 `sys.executable`（当前解释器）才解决。
 
-但我还是看好它。原因不复杂：工具复用这个需求是真实的，谁先解决它，谁就能让开发者少写一堆重复代码。协议这种东西，一旦用户量起来，收敛是迟早的事。
+两个都不是大问题，但记住能省不少时间：装 `mcp<2`，客户端用 `sys.executable`。
 
-## Agent，是把工具、记忆、规划攒在一起的模型
+## 别为了 MCP 而 MCP
 
-有了 MCP 把工具接入标准化，Agent 就顺理成章了。
+得泼点冷水。
 
-什么是 Agent？我的理解是：一个 LLM，加上能调工具的能力，再加上记忆（记住上下文和历史），再加上规划（把大任务拆成小步骤），就变成了能自主干活的 Agent。
+MCP 现在并没有真的"统一"。OpenAI 有自己的 function calling 和 Apps SDK，Google 有 Gemini 的 tools，各家生态还在各自演进。MCP 只是正在被越来越多人接受的一个标准，不是既成事实。
 
-MCP 在这里的角色，是给 Agent 提供"手"。没有 MCP 之前，Agent 调工具是各家各写；有了 MCP，Agent 调工具就像插 USB-C，插上就能用。
+更实际的一点：如果你的工具只给一个模型、一个客户端用，直接写 function calling 更省事，没必要绕一圈上 MCP。它的价值在复用和多人共用上，规模不到那个程度，收益不明显。我这次上 MCP，是因为同一批工具要同时给两个客户端用，重写代码的成本已经压过学习成本了。
 
-## Skill，把 Agent 的能力打包复用
+至于以后会不会真的收敛到 MCP，我倾向会，但没有把握。协议这东西，用户量起来才会赢。
 
-最后是 Skill（技能）。这个词最近到处都在提，我理解它就是一句话：把 Agent 完成某类任务的能力，封装成一个可复用的技能包。
+## 最后说点实在的
 
-比如一个 Agent 学会了"写周报"这件事，你把它打包成一个 Skill，下次别的 Agent 要写周报，直接挂上这个 Skill 就行，不用重新教。
+MCP 就是给"模型调外部能力"这件事定了个统一接口。tool 让它能动手，resource 让它能读数据，prompt 让它有现成模板可用；stdio 管本地，HTTP 管远程。
 
-Skill 和 MCP 的关系也顺：Skill 是上层的能力封装，MCP 是底层的工具连接。Skill 在干活的时候，底层很可能就是通过 MCP 去调各种工具。
-
-## 把这条线捋一遍
-
-把我捋的这条线再说一遍：LLM 只会预测下一个 Token，在有限的 Context 里靠 Prompt 引导；它只会"说"不会"做"，所以要靠 Tool 让它动手；各家工具的接口又不一样，于是有了 MCP 这个统一协议；有了标准化的工具接入，LLM 才升级成能自主干活的 Agent；Agent 的能力再打包，就是 Skill。
-
-一句话：MCP 是连接 LLM 和工具世界的那根统一接口。搞懂它，从 Token 到 Skill 这条线就通了。
+如果你也要接一堆工具，先想清楚有没有必要走 MCP。有必要的话，照着我这个二十几行的 server 改就行，三样能力都在里面了。
