@@ -17,14 +17,14 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>MCP 2.x 把 FastMCP 改名了，我顺着这个坑把 LLM 到 Agent 捋顺了</title>
+    <title>二十几行写个 MCP server</title>
     <link href="https://kingdream-cn.github.io/2026/11/21/mcp-llm-to-agent-skill/"/>
     <id>https://kingdream-cn.github.io/2026/11/21/mcp-llm-to-agent-skill/</id>
     <published>2026-11-21T02:00:00.000Z</published>
     <updated>2026-11-21T02:00:00.000Z</updated>
     
     
-    <summary type="html">从一个最小 MCP demo 说起，把 LLM、Token、Context、Prompt、Tool、MCP、Agent、Skill 这条链路串起来，讲清楚 MCP 为什么是连接 LLM 与工具世界的通用协议。</summary>
+    <summary type="html">用一个二十几行的 MCP server 讲清 MCP 的定位、Host/Client/Server 架构、tool/resource/prompt 三类能力，以及 stdio 和 HTTP 两种传输方式。</summary>
     
     
     
@@ -32,8 +32,6 @@
     
     
     <category term="AI" scheme="https://kingdream-cn.github.io/tags/AI/"/>
-    
-    <category term="LLM" scheme="https://kingdream-cn.github.io/tags/LLM/"/>
     
     <category term="MCP" scheme="https://kingdream-cn.github.io/tags/MCP/"/>
     
@@ -278,7 +276,7 @@
     <link href="https://kingdream-cn.github.io/2026/09/09/git-practice-tutorial/"/>
     <id>https://kingdream-cn.github.io/2026/09/09/git-practice-tutorial/</id>
     <published>2026-09-09T02:00:00.000Z</published>
-    <updated>2026-11-21T06:43:41.410Z</updated>
+    <updated>2026-11-21T06:54:46.898Z</updated>
     
     
     <summary type="html">介绍我基于 Git-Interactive-Tutorial 定制开发的交互式 Git 练习页，以及如何用它从零理解 Git 的四个区域和常用命令。</summary>
@@ -303,7 +301,7 @@
     <link href="https://kingdream-cn.github.io/2026/09/07/hello-world/"/>
     <id>https://kingdream-cn.github.io/2026/09/07/hello-world/</id>
     <published>2026-09-07T02:00:00.000Z</published>
-    <updated>2026-11-21T06:43:41.410Z</updated>
+    <updated>2026-11-21T06:54:46.898Z</updated>
     
     
     <summary type="html">这是我的第一篇博客文章，记录我作为机器人开发工程师的学习与成长。</summary>
